@@ -15,20 +15,19 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
     const stringifiedData = data.toString();
     const arrayData = stringifiedData.split(CRLF);
     console.log("arrayData", arrayData);
+    
+    //helper function
     function getArrayData(index: number) {
       if (index < arrayData.length) {
         return arrayData[index];
       } else return "";
     }
-    const command = arrayData[2].toLocaleLowerCase();
-    //console.log("command", command);
+    
+    const command = getArrayData(2).toLocaleUpperCase();
 
     switch (command) {
-      case "set":
-        console.log("set command npw");
-
+      case "SET": 
         mem.set(getArrayData(4), getArrayData(6));
-        console.log("set command npw2");
 
         if (getArrayData(8).toLowerCase() === "px")
           setTimeout(() => {
@@ -36,11 +35,10 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
             mem.delete(getArrayData(4));
           }, +getArrayData(10));
 
-        console.log("set command npw3");
         connection.write("+OK" + "\r\n");
         break;
-      case "get":
-        let data = mem.get(arrayData[4]);
+      case "GET":
+        let data = mem.get(getArrayData(4));
         responseData =
           data !== undefined
             ? `$${data.length}\r\n${data}\r\n`
@@ -48,15 +46,15 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
 
         connection.write(responseData);
         break;
-      case "echo":
-        responseData = `${arrayData[3]}\r\n${arrayData[4]}\r\n`;
+      case "ECHO":
+        responseData = `${getArrayData(3)}\r\n${getArrayData(4)}\r\n`;
         connection.write(responseData);
         break;
-      case "ping":
+      case "PING":
         connection.write("+PONG\r\n");
         break;
       default:
-        connection.write("+PONG\r\n");
+        connection.write("+Pong?\r\n");
         break;
     }
     // connection.write("+PONG\r\n");
