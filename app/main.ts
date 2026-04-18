@@ -27,21 +27,22 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
 
     switch (command) {
       case "SET":
-        mem.set(getArrayData(4), getArrayData(6));
+        mem.set(getArrayData(4), getArrayData(6)); // set the value
 
         if (getArrayData(8).toLowerCase() === "px")
           setTimeout(() => {
             mem.delete(getArrayData(4));
           }, +getArrayData(10));
+        //set expiry in miliseconds
         else if (getArrayData(8).toLowerCase() === "ex")
           setTimeout(
             () => {
               mem.delete(getArrayData(4));
             },
             +getArrayData(10) * 1000,
-          );
+          ); //set expiry in second
 
-        connection.write("+OK" + "\r\n");
+        connection.write("+OK" + "\r\n"); //return succes
         break;
       case "GET":
         let data = mem.get(getArrayData(4));
@@ -53,7 +54,7 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         connection.write(responseData);
         break;
       case "ACL":
-        responseData = "";
+        responseData = "WHOAMI";
         if (getArrayData(4) == "WHOAMI") {
           data = "default";
           responseData = `$${data.length}\r\n${data}\r\n`;
@@ -71,7 +72,6 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         connection.write("+Pong\r\n");
         break;
     }
-    // connection.write("+PONG\r\n");
   });
 });
 server.listen(6379, "127.0.0.1");
