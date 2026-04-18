@@ -47,8 +47,11 @@ export function handle(data: Buffer, connection: net.Socket) {
         const data = "default";
         connection.write(BulkString(data));
       } else if (getArrayData(4).toLocaleUpperCase() == "GETUSER") {
+        
         const flags = BulkString("flags");
+        const password = BulkString("passwords")
         const flagArray: string[] = [];
+        const passwordArray: string[] = [];
 
         let user = getArrayData(6);
 
@@ -56,7 +59,7 @@ export function handle(data: Buffer, connection: net.Socket) {
           flagArray.push(BulkString("nopass"));
         }
 
-        const array = BulkArray([flags, BulkArray(flagArray)]);
+        const array = BulkArray([flags, BulkArray(flagArray), password, BulkArray(passwordArray)]);
         connection.write(array);
       } else {
         connection.write(BulkString("Command not found"));
