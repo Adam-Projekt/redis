@@ -6,7 +6,7 @@ import { User } from "./user";
 
 const mem = new Map<string, any>();
 
-const users: User[] = [new User("default", ["nopass"], [])];
+const users: User[] = [new User("default", [BulkString("nopass")], [])];
 
 export function handle(arrayData: string[], connection: net.Socket) {
   //helper function
@@ -73,7 +73,9 @@ export function handle(arrayData: string[], connection: net.Socket) {
             Parametrs = generateSHA256(Parametrs);
             user.passwordArray.push(BulkString(Parametrs));
 
-            let len = user.flagArray.findIndex((flag) => flag === "nopass");
+            let len = user.flagArray.findIndex(
+              (flag) => flag === BulkString("nopass"),
+            );
             user.flagArray.splice(len, 1);
           }
           connection.write(SimpleString("OK"));
