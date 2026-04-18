@@ -24,7 +24,7 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         break;
       case "get":
         let data = mem.get(arrayData[4]);
-        responseData = "$" + data.lenght() + CRLF + data + CRLF;
+        responseData = "$" + "4" + CRLF + data + CRLF;
         console.log(responseData);
         connection.write(responseData);
         break;
