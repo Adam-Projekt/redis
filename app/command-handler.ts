@@ -50,7 +50,7 @@ export function handle(data: Buffer, connection: net.Socket) {
         const data = "flags";
         const response = BulkString(data);
         const response2 = BulkArray([]);
-        const array = BulkArray([response, response2]) + response + response2;
+        const array = BulkArray([response, response2]);
         connection.write(array);
       } else {
         connection.write(BulkString("Command not found"));

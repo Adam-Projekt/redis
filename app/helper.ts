@@ -10,5 +10,9 @@ export function SimpleString(input: string) {
   return "+" + input + CRLF;
 }
 export function BulkArray(input: string[]) {
-  return "*" + input.length + CRLF
+  let arrays = "";
+  input.forEach((index) => {
+    arrays = arrays + input[Number(index)];
+  });
+  return "*" + input.length + CRLF;
 }
