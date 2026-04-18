@@ -1,3 +1,4 @@
+import { strict } from "assert";
 import * as net from "net";
 
 console.log("Logs from your program will appear here!");
@@ -30,10 +31,11 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         connection.write(responseData);
         break;
       case "get":
-        let data: string = mem.get(arrayData[4]);
-        let len: number = data.length;
-        responseData = "$" + len + CRLF + data + CRLF;
-        if (data == undefined) {
+        let data = mem.get(arrayData[4]);
+        if (!data == undefined) {
+          let len: number = data.length;
+          responseData = "$" + len + CRLF + data + CRLF;
+        } else {
           responseData = NULL_BULK_STRING;
         }
         connection.write(responseData);
