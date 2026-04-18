@@ -15,25 +15,31 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
     const stringifiedData = data.toString();
     const arrayData = stringifiedData.split(CRLF);
     console.log("arrayData", arrayData);
-    
+
     //helper function
     function getArrayData(index: number) {
       if (index < arrayData.length) {
         return arrayData[index];
       } else return "";
     }
-    
+
     const command = getArrayData(2).toLocaleUpperCase();
 
     switch (command) {
-      case "SET": 
+      case "SET":
         mem.set(getArrayData(4), getArrayData(6));
 
         if (getArrayData(8).toLowerCase() === "px")
           setTimeout(() => {
-            console.log("key has expire");
             mem.delete(getArrayData(4));
           }, +getArrayData(10));
+        else if (getArrayData(8).toLowerCase() === "ex")
+          setTimeout(
+            () => {
+              mem.delete(getArrayData(4));
+            },
+            +getArrayData(10) * 1000,
+          );
 
         connection.write("+OK" + "\r\n");
         break;
