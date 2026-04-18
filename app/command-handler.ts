@@ -53,7 +53,7 @@ export function handle(data: Buffer, connection: net.Socket) {
         let user = getArrayData(6);
 
         if (user == "default") {
-          flagArray.push("nopass");
+          flagArray.push(BulkString("nopass"));
         }
 
         const array = BulkArray([flags, BulkArray(flagArray)]);
