@@ -7,6 +7,9 @@ const CRLF = "\r\n";
 
 const server: net.Server = net.createServer((connection: net.Socket) => {
   // Handle connection
+  connection.on("connect", () => {
+    
+  })
   connection.on("data", (data: Buffer) => {
     const stringifiedData = data.toString();
     const arrayData = stringifiedData.split(CRLF);

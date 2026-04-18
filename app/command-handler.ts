@@ -17,7 +17,7 @@ const users: User[] = [
     "default",
     [BulkString("nopass")],
     [
-      
+      "$64\r\n89e01536ac207279409d4de1e5253e01f4a1769e696db0d6062ca9b8f56767c8\r\n",
     ],
   ),
 ];
@@ -131,6 +131,9 @@ export async function handle(arrayData: string[], connection: net.Socket) {
       let InputPassword = BulkString(await generateSHA256(getArrayData(6)));
       let PasswordArray = user.passwordArray;
       let result = PasswordArray.findIndex((a) => a === InputPassword);
+      if (user.flagArray.findIndex((a) => a === BulkString("nopass")) !== -1) {
+        result = 1;
+      }
       if (result == -1) {
         connection.write(
           BulkError(
