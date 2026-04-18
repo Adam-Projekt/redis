@@ -43,10 +43,11 @@ export async function handle(arrayData: string[], connection: net.Socket) {
       connection.write(BulkString(data));
       break;
     case "ACL":
-      let user = getArrayData(6);
-      let index = users.findIndex((person) => person.name === user);
+      let username = getArrayData(6);
+      let user;
+      let index = users.findIndex((person) => person.name === username);
       if (index >= 0) {
-        let user = users[index];
+        user = users[index];
         console.log(user);
       } else {
         if (subcommand == "WHOAMI") {
