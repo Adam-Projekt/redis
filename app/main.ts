@@ -1,4 +1,3 @@
-import { strict } from "assert";
 import * as net from "net";
 
 console.log("Logs from your program will appear here!");
@@ -6,7 +5,8 @@ console.log("Logs from your program will appear here!");
 const CRLF = "\r\n";
 const NULL_BULK_STRING = "$-1\r\n";
 
-let responseData;
+let data: any;
+let responseData: any;
 const mem = new Map<string, any>();
 
 const server: net.Server = net.createServer((connection: net.Socket) => {
@@ -45,7 +45,7 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         connection.write("+OK" + "\r\n"); //return succes
         break;
       case "GET":
-        let data = mem.get(getArrayData(4));
+        data = mem.get(getArrayData(4));
         responseData =
           data !== undefined
             ? `$${data.length}\r\n${data}\r\n`
@@ -54,12 +54,10 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         connection.write(responseData);
         break;
       case "ACL":
-        responseData = "WHOAMI";
-        if (getArrayData(4) == "WHOAMI") {
-          data = "default";
-          responseData = `$${data.length}\r\n${data}\r\n`;
-        }
-        connection.write(responseData);
+        data = "default";
+        responseData = "$7\r\ndefault\r\n";
+        connection.write("$7\r\ndefault\r\n");
+        console.log("here");
         break;
       case "ECHO":
         responseData = `${getArrayData(3)}\r\n${getArrayData(4)}\r\n`;
