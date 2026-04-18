@@ -17,6 +17,7 @@ export async function handle(arrayData: string[], connection: net.Socket) {
   }
 
   const command = getArrayData(2).toLocaleUpperCase();
+  const subcommand = getArrayData(4).toLocaleUpperCase();
 
   switch (command) {
     case "SET":
@@ -42,16 +43,22 @@ export async function handle(arrayData: string[], connection: net.Socket) {
       connection.write(BulkString(data));
       break;
     case "ACL":
-      let username = getArrayData(6);
-      let index = users.findIndex((person) => person.name === username);
-      if (index < 0) {
-        connection.write(BulkString("User not exist"));
+      let user = getArrayData(6);
+      let index = users.findIndex((person) => person.name === user);
+      if (index >= 0) {
+        let user = users[index];
+        console.log(user);
+      } else {
+        if (subcommand == "WHOAMI") {
+          const data = "default";
+          connection.write(BulkString(data));
+        } else {
+          connection.write(BulkString("User not exist"));
+        }
         break;
       }
-      let user = users[index];
-      console.log(user);
-      const command = getArrayData(4).toLocaleUpperCase();
-      switch (command) {
+
+      switch (subcommand) {
         case "WHOAMI":
           const data = "default";
           connection.write(BulkString(data));
