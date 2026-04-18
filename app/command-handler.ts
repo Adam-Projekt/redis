@@ -57,16 +57,13 @@ export function handle(arrayData: string[], connection: net.Socket) {
           connection.write(BulkString(data));
           break;
         case "GETUSER":
-          const flags = BulkString("flags");
-          const password = BulkString("passwords");
-
           const array = BulkArray([
-            flags,
+            BulkString("flags"),
             BulkArray(user.flagArray),
-            password,
+            BulkString("passwords"),
             BulkArray(user.passwordArray),
           ]);
-          console.log(array)
+          console.log(array);
           connection.write(array);
           break;
         case "SETUSER":
@@ -74,7 +71,10 @@ export function handle(arrayData: string[], connection: net.Socket) {
           if (Parametrs.startsWith(">")) {
             Parametrs == Parametrs.slice(1);
             Parametrs = generateSHA256(Parametrs);
-            passwordArray.push(BulkString(Parametrs));
+            user.passwordArray.push(BulkString(Parametrs));
+
+            let len = user.flagArray.findIndex((flag) => flag === "nopass");
+            user.flagArray.splice(len, 1);
           }
           connection.write(SimpleString("OK"));
           break;
