@@ -29,3 +29,7 @@ export async function generateSHA256(input: string): Promise<string> {
 
   return hashHex;
 }
+export function BulkError(input: string) {
+  return "-" + input + CRLF;
+}
+console.log(BulkString(await generateSHA256("mypassword")));

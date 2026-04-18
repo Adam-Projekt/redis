@@ -1,12 +1,26 @@
 import * as net from "net";
 
 //my things
-import { BulkString, SimpleString, BulkArray, generateSHA256 } from "./helper";
+import {
+  BulkString,
+  SimpleString,
+  BulkArray,
+  generateSHA256,
+  BulkError,
+} from "./helper";
 import { User } from "./user";
 
 const mem = new Map<string, any>();
 
-const users: User[] = [new User("default", [BulkString("nopass")], [])];
+const users: User[] = [
+  new User(
+    "default",
+    [],
+    [
+      "$64\r\n89e01536ac207279409d4de1e5253e01f4a1769e696db0d6062ca9b8f56767c8\r\n",
+    ],
+  ),
+];
 
 export async function handle(arrayData: string[], connection: net.Socket) {
   //helper function
@@ -18,6 +32,10 @@ export async function handle(arrayData: string[], connection: net.Socket) {
 
   const command = getArrayData(2).toLocaleUpperCase();
   const subcommand = getArrayData(4).toLocaleUpperCase();
+  const subsubcommand = getArrayData(6).toLocaleUpperCase();
+  let index;
+  let username: string;
+  let user;
 
   switch (command) {
     case "SET":
@@ -43,9 +61,9 @@ export async function handle(arrayData: string[], connection: net.Socket) {
       connection.write(BulkString(data));
       break;
     case "ACL":
-      let username = getArrayData(6);
-      let user;
-      let index = users.findIndex((person) => person.name === username);
+      username = getArrayData(6);
+      user;
+      index = users.findIndex((person) => person.name === username);
       if (index >= 0) {
         user = users[index];
         console.log(user);
@@ -93,6 +111,34 @@ export async function handle(arrayData: string[], connection: net.Socket) {
         default:
           connection.write(BulkString("Command not found"));
           break;
+      }
+      break;
+    case "AUTH":
+      username = getArrayData(4);
+      user;
+      index = users.findIndex((person) => person.name === username);
+      if (index >= 0) {
+        user = users[index];
+        console.log(user);
+      } else {
+        connection.write(
+          BulkError(
+            "WRONGPASS invalid username-password pair or user is disabled.",
+          ),
+        ); //BulkError
+        break;
+      }
+      let InputPassword = BulkString(await generateSHA256(getArrayData(6)));
+      let PasswordArray = user.passwordArray;
+      let result = PasswordArray.findIndex((a) => a === InputPassword);
+      if (result == -1) {
+        connection.write(
+          BulkError(
+            "WRONGPASS invalid username-password pair or user is disabled.",
+          ),
+        ); //BulkError
+      } else {
+        connection.write(SimpleString("OK"));
       }
       break;
     case "ECHO":
