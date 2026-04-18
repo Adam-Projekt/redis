@@ -52,6 +52,14 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
 
         connection.write(responseData);
         break;
+      case "ACL":
+        responseData = "";
+        if (getArrayData(4) == "WHOAMI") {
+          data = "default";
+          responseData = `$${data.length}\r\n${data}\r\n`;
+        }
+        connection.write(responseData);
+        break;
       case "ECHO":
         responseData = `${getArrayData(3)}\r\n${getArrayData(4)}\r\n`;
         connection.write(responseData);
