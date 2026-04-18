@@ -2,18 +2,34 @@ import * as net from "net";
 
 console.log("Logs from your program will appear here!");
 
+const CRLF = "\r\n";
+
+let responseData;
+const mem = new Map<String, any>();
+
 const server: net.Server = net.createServer((connection: net.Socket) => {
   // Handle connection
   connection.on("data", (data: Buffer) => {
     const stringifiedData = data.toString();
-    const arrayData = stringifiedData.split("\r\n");
+    const arrayData = stringifiedData.split(CRLF);
     console.log("arrayData", arrayData);
     const command = arrayData[2].toLocaleLowerCase();
     console.log("command", command);
 
     switch (command) {
+      case "set":
+        mem.set(arrayData[4], arrayData[6]);
+        responseData = "+OK" + CRLF;
+        connection.write(responseData);
+        break;
+      case "get":
+        let data = mem.get(arrayData[4]);
+        responseData = "$" + data.lenght + CRLF + data + CRLF;
+        console.log(responseData);
+        connection.write(responseData);
+        break;
       case "echo":
-        const responseData = `${arrayData[3]}\r\n${arrayData[4]}\r\n`;
+        responseData = `${arrayData[3]}\r\n${arrayData[4]}\r\n`;
         connection.write(responseData);
         break;
       case "ping":
