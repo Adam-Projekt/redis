@@ -69,11 +69,11 @@ export async function handle(arrayData: string[], connection: net.Socket) {
         case "SETUSER":
           let Parametrs: string = getArrayData(8);
           if (Parametrs.startsWith(">")) {
-            Parametrs == Parametrs.slice(1);
-            console.log(Parametrs);
-            Parametrs = await generateSHA256(Parametrs);
-            console.log(Parametrs);
-            user.passwordArray.push(BulkString(Parametrs));
+            let password = Parametrs.slice(1);
+            console.log(password);
+            password = await generateSHA256(password);
+            console.log(password);
+            user.passwordArray.push(BulkString(password));
 
             let len = user.flagArray.findIndex(
               (flag) => flag === BulkString("nopass"),
