@@ -5,7 +5,6 @@ console.log("Logs from your program will appear here!");
 const CRLF = "\r\n";
 const NULL_BULK_STRING = "$-1\r\n";
 
-let data: any;
 let responseData: any;
 const mem = new Map<string, any>();
 
@@ -45,23 +44,20 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         connection.write("+OK" + "\r\n"); //return succes
         break;
       case "GET":
-        data = mem.get(getArrayData(4));
-        responseData =
+        const data = mem.get(getArrayData(4));
+        connection.write(
           data !== undefined
             ? `$${data.length}\r\n${data}\r\n`
-            : NULL_BULK_STRING;
-
-        connection.write(responseData);
+            : NULL_BULK_STRING,
+        );
         break;
       case "ACL":
-        data = "default";
+        const data2 = "default";
         responseData = "$7\r\ndefault\r\n";
         connection.write("$7\r\ndefault\r\n");
-        console.log("here");
         break;
       case "ECHO":
-        responseData = `${getArrayData(3)}\r\n${getArrayData(4)}\r\n`;
-        connection.write(responseData);
+        connection.write(`${getArrayData(3)}\r\n${getArrayData(4)}\r\n`);
         break;
       case "PING":
         connection.write("+PONG\r\n");
