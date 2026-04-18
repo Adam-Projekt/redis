@@ -48,9 +48,9 @@ export function handle(arrayData: string[], connection: net.Socket) {
         case "GETUSER":
           const flags = BulkString("flags");
           const password = BulkString("passwords");
-          
-          if (passwordArray.length = 0) {
-            flagArray.push(BulkString("nopass"))
+
+          if (passwordArray.length == 0) {
+            flagArray.push(BulkString("nopass"));
           }
           const array = BulkArray([
             flags,
