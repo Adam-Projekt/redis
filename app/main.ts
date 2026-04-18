@@ -15,6 +15,11 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
     const stringifiedData = data.toString();
     const arrayData = stringifiedData.split(CRLF);
     console.log("arrayData", arrayData);
+    function getArrayData(index: number) {
+      if (index < arrayData.length) {
+        return arrayData[index];
+      } else return null;
+    }
     const command = arrayData[2].toLocaleLowerCase();
     //console.log("command", command);
 
