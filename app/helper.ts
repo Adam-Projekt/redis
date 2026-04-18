@@ -14,5 +14,5 @@ export function BulkArray(input: string[]) {
   input.forEach((index) => {
     arrays = arrays + input[Number(index)];
   });
-  return "*" + input.length + CRLF;
+  return "*" + input.length + CRLF + arrays;
 }
