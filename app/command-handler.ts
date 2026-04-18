@@ -1,8 +1,12 @@
 import * as net from "net";
 
 //my things
-import { mem, flagArray, passwordArray } from "./mem";
 import { BulkString, SimpleString, BulkArray, generateSHA256 } from "./helper";
+import { User } from "./user";
+
+const mem = new Map<string, any>();
+
+const users: User[] = [new User("default", ["nopass"], [])];
 
 export function handle(arrayData: string[], connection: net.Socket) {
   //helper function
@@ -38,7 +42,14 @@ export function handle(arrayData: string[], connection: net.Socket) {
       connection.write(BulkString(data));
       break;
     case "ACL":
-      let user = getArrayData(6);
+      let username = getArrayData(6);
+      let index = users.findIndex((person) => person.name === username);
+      if (index < 0) {
+        connection.write(BulkString("User not exist"));
+        break;
+      }
+      let user = users[index];
+      console.log(user);
       const command = getArrayData(4).toLocaleUpperCase();
       switch (command) {
         case "WHOAMI":
@@ -49,30 +60,23 @@ export function handle(arrayData: string[], connection: net.Socket) {
           const flags = BulkString("flags");
           const password = BulkString("passwords");
 
-          if (passwordArray.length == 0) {
-            flagArray.push(BulkString("nopass"));
-          }
           const array = BulkArray([
             flags,
-            BulkArray(flagArray),
+            BulkArray(user.flagArray),
             password,
-            BulkArray(passwordArray),
+            BulkArray(user.passwordArray),
           ]);
+          console.log(array)
           connection.write(array);
           break;
         case "SETUSER":
           let Parametrs: string = getArrayData(8);
-          if (Parametrs[0] == ">") {
+          if (Parametrs.startsWith(">")) {
             Parametrs == Parametrs.slice(1);
             Parametrs = generateSHA256(Parametrs);
             passwordArray.push(BulkString(Parametrs));
-
-            const index = flagArray.indexOf("nopass");
-            if (index > -1) {
-              flagArray.splice(index, 1);
-            }
           }
-          connection.write(SimpleString("OK"))
+          connection.write(SimpleString("OK"));
           break;
         default:
           connection.write(BulkString("Command not found"));
