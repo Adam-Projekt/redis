@@ -3,6 +3,7 @@ import * as net from "net";
 console.log("Logs from your program will appear here!");
 
 const CRLF = "\r\n";
+const NULL_BULK_STRING = "$-1\r\n";
 
 let responseData;
 const mem = new Map<String, any>();
@@ -24,13 +25,13 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         break;
       case "get":
         let data: string = mem.get(arrayData[4]);
+        let len: number = data.length;
+        responseData = "$" + len + CRLF + data + CRLF;
         if (data == undefined) {
           data = "";
+          len = -1;
+          responseData = NULL_BULK_STRING;
         }
-        let len: number = data.length;
-        console.log("data: " + data + ", lenght:" + len);
-        responseData = "$" + len + CRLF + data + CRLF;
-        console.log(responseData);
         connection.write(responseData);
         break;
       case "echo":
