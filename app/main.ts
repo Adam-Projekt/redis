@@ -18,7 +18,7 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
     function getArrayData(index: number) {
       if (index < arrayData.length) {
         return arrayData[index];
-      } else return null;
+      } else return "";
     }
     const command = arrayData[2].toLocaleLowerCase();
     //console.log("command", command);
@@ -26,13 +26,16 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
     switch (command) {
       case "set":
         console.log("set command npw");
-        mem.set(arrayData[4], arrayData[6]);
+
+        mem.set(getArrayData(4), getArrayData(6));
         console.log("set command npw2");
-        if (arrayData[8].toLowerCase() === "px")
+
+        if (getArrayData(8).toLowerCase() === "px")
           setTimeout(() => {
             console.log("key has expire");
-            mem.delete(arrayData[4]);
-          }, +arrayData[10]);
+            mem.delete(getArrayData(4));
+          }, +getArrayData(10));
+
         console.log("set command npw3");
         connection.write("+OK" + "\r\n");
         break;
