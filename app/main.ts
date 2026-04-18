@@ -7,7 +7,7 @@ const CRLF = "\r\n";
 const NULL_BULK_STRING = "$-1\r\n";
 
 let responseData;
-const mem = new Map<String, any>();
+const mem = new Map<string, any>();
 
 const server: net.Server = net.createServer((connection: net.Socket) => {
   // Handle connection
@@ -21,23 +21,22 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
     switch (command) {
       case "set":
         mem.set(arrayData[4], arrayData[6]);
-        if (arrayData[8] === "px")
+        if (arrayData[8].toLowerCase() === "px")
           setTimeout(() => {
             console.log("key has expire");
             mem.delete(arrayData[4]);
-          }, Number(arrayData[10]));
+          }, +arrayData[10]);
         responseData = "+OK" + CRLF;
 
         connection.write(responseData);
         break;
       case "get":
         let data = mem.get(arrayData[4]);
-        if (!data == undefined) {
-          let len: number = data.length;
-          responseData = "$" + len + CRLF + data + CRLF;
-        } else {
-          responseData = NULL_BULK_STRING;
-        }
+        responseData =
+          data !== undefined
+            ? `$${data.length}\r\n${data}\r\n`
+            : NULL_BULK_STRING;
+
         connection.write(responseData);
         break;
       case "echo":
