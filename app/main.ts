@@ -54,7 +54,7 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         connection.write("+PONG\r\n");
         break;
       default:
-        connection.write("+Pong?\r\n");
+        connection.write("+Pong\r\n");
         break;
     }
     // connection.write("+PONG\r\n");
