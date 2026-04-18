@@ -17,5 +17,5 @@ export function BulkArray(input: string[]) {
 }
 
 export function generateSHA256(input: string): string {
-  return createHash("sha256").update(input).digest("hex");
+  return createHash("sha256").update(input).digest("hex").toLocaleLowerCase();
 }
