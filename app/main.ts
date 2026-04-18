@@ -15,7 +15,7 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
     const arrayData = stringifiedData.split(CRLF);
     console.log("arrayData", arrayData);
     const command = arrayData[2].toLocaleLowerCase();
-    console.log("command", command);
+    //console.log("command", command);
 
     switch (command) {
       case "set":
@@ -34,8 +34,6 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         let len: number = data.length;
         responseData = "$" + len + CRLF + data + CRLF;
         if (data == undefined) {
-          data = "";
-          len = -1;
           responseData = NULL_BULK_STRING;
         }
         connection.write(responseData);
