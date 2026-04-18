@@ -1,6 +1,6 @@
 import * as net from "net";
 import { mem } from "./mem";
-import { BulkString, SimpleString } from "./helper";
+import { BulkString, SimpleString, BulkArray } from "./helper";
 
 const CRLF = "\r\n";
 const NULL_BULK_STRING = "$-1\r\n";
@@ -49,8 +49,8 @@ export function handle(data: Buffer, connection: net.Socket) {
       } else if (getArrayData(4).toLocaleUpperCase() == "GETUSER") {
         const data = "flags";
         const response = BulkString(data);
-        const response2 = "*0\r\n";
-        const array = "*2\r\n" + response + response2;
+        const response2 = BulkArray([]);
+        const array = BulkArray([response, response2]) + response + response2;
         connection.write(array);
       } else {
         connection.write(BulkString("Command not found"));

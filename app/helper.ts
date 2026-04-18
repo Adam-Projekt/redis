@@ -9,3 +9,6 @@ export function BulkString(input: string) {
 export function SimpleString(input: string) {
   return "+" + input + CRLF;
 }
+export function BulkArray(input: string[]) {
+  return "*" + input.length + CRLF
+}
