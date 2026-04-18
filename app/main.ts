@@ -24,7 +24,7 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
           setTimeout(() => {
             console.log("key has expire");
             mem.delete(arrayData[4]);
-          }, +arrayData[10]);
+          }, Number(arrayData[10]));
         responseData = "+OK" + CRLF;
 
         connection.write(responseData);
