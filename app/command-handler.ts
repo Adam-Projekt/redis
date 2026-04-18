@@ -72,6 +72,7 @@ export function handle(arrayData: string[], connection: net.Socket) {
               flagArray.splice(index, 1);
             }
           }
+          connection.write(SimpleString("OK"))
           break;
         default:
           connection.write(BulkString("Command not found"));
