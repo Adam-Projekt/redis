@@ -16,7 +16,9 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
         const responseData = `${arrayData[3]}\r\n${arrayData[4]}\r\n`;
         connection.write(responseData);
         break;
-
+      case "ping":
+        connection.write("+PONG\r\n");
+        break;
       default:
         connection.write("+PONG\r\n");
         break;
