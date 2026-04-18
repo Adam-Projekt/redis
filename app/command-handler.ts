@@ -1,15 +1,10 @@
 import * as net from "net";
-import { mem } from "./mem";
-import { BulkString, SimpleString, BulkArray } from "./helper";
 
-const CRLF = "\r\n";
-const NULL_BULK_STRING = "$-1\r\n";
+//my things
+import { mem, flagArray, passwordArray } from "./mem";
+import { BulkString, SimpleString, BulkArray, generateSHA256 } from "./helper";
 
-export function handle(data: Buffer, connection: net.Socket) {
-  const stringifiedData = data.toString();
-  const arrayData = stringifiedData.split(CRLF);
-  console.log("arrayData", arrayData);
-
+export function handle(arrayData: string[], connection: net.Socket) {
   //helper function
   function getArrayData(index: number) {
     if (index < arrayData.length) {
@@ -43,26 +38,44 @@ export function handle(data: Buffer, connection: net.Socket) {
       connection.write(BulkString(data));
       break;
     case "ACL":
-      if (getArrayData(4).toLocaleUpperCase() == "WHOAMI") {
-        const data = "default";
-        connection.write(BulkString(data));
-      } else if (getArrayData(4).toLocaleUpperCase() == "GETUSER") {
-        
-        const flags = BulkString("flags");
-        const password = BulkString("passwords")
-        const flagArray: string[] = [];
-        const passwordArray: string[] = [];
+      let user = getArrayData(6);
+      const command = getArrayData(4).toLocaleUpperCase();
+      switch (command) {
+        case "WHOAMI":
+          const data = "default";
+          connection.write(BulkString(data));
+          break;
+        case "GETUSER":
+          const flags = BulkString("flags");
+          const password = BulkString("passwords");
+          
+          if (passwordArray.length = 0) {
+            flagArray.push(BulkString("nopass"))
+          }
+          const array = BulkArray([
+            flags,
+            BulkArray(flagArray),
+            password,
+            BulkArray(passwordArray),
+          ]);
+          connection.write(array);
+          break;
+        case "SETUSER":
+          let Parametrs: string = getArrayData(8);
+          if (Parametrs[0] == ">") {
+            Parametrs == Parametrs.slice(1);
+            Parametrs = generateSHA256(Parametrs);
+            passwordArray.push(BulkString(Parametrs));
 
-        let user = getArrayData(6);
-
-        if (user == "default") {
-          flagArray.push(BulkString("nopass"));
-        }
-
-        const array = BulkArray([flags, BulkArray(flagArray), password, BulkArray(passwordArray)]);
-        connection.write(array);
-      } else {
-        connection.write(BulkString("Command not found"));
+            const index = flagArray.indexOf("nopass");
+            if (index > -1) {
+              flagArray.splice(index, 1);
+            }
+          }
+          break;
+        default:
+          connection.write(BulkString("Command not found"));
+          break;
       }
       break;
     case "ECHO":
