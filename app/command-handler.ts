@@ -71,6 +71,7 @@ export async function handle(arrayData: string[], connection: net.Socket) {
           if (Parametrs.startsWith(">")) {
             Parametrs == Parametrs.slice(1);
             Parametrs = await generateSHA256(Parametrs);
+            console.log(Parametrs);
             user.passwordArray.push(BulkString(Parametrs));
 
             let len = user.flagArray.findIndex(
