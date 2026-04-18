@@ -27,11 +27,13 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
       case "set":
         console.log("set command npw");
         mem.set(arrayData[4], arrayData[6]);
+        console.log("set command npw2");
         if (arrayData[8].toLowerCase() === "px")
           setTimeout(() => {
             console.log("key has expire");
             mem.delete(arrayData[4]);
           }, +arrayData[10]);
+        console.log("set command npw3");
         connection.write("+OK" + "\r\n");
         break;
       case "get":
