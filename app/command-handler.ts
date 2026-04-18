@@ -47,10 +47,16 @@ export function handle(data: Buffer, connection: net.Socket) {
         const data = "default";
         connection.write(BulkString(data));
       } else if (getArrayData(4).toLocaleUpperCase() == "GETUSER") {
-        const data = "flags";
-        const response = BulkString(data);
-        const response2 = BulkArray([]);
-        const array = BulkArray([response, response2]);
+        const flags = BulkString("flags");
+        const flagArray: string[] = [];
+
+        let user = getArrayData(6);
+
+        if (user == "default") {
+          flagArray.push("nopass");
+        }
+
+        const array = BulkArray([flags, BulkArray(flagArray)]);
         connection.write(array);
       } else {
         connection.write(BulkString("Command not found"));
