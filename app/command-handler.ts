@@ -8,7 +8,7 @@ const mem = new Map<string, any>();
 
 const users: User[] = [new User("default", [BulkString("nopass")], [])];
 
-export function handle(arrayData: string[], connection: net.Socket) {
+export async function handle(arrayData: string[], connection: net.Socket) {
   //helper function
   function getArrayData(index: number) {
     if (index < arrayData.length) {
@@ -70,7 +70,7 @@ export function handle(arrayData: string[], connection: net.Socket) {
           let Parametrs: string = getArrayData(8);
           if (Parametrs.startsWith(">")) {
             Parametrs == Parametrs.slice(1);
-            Parametrs = generateSHA256(Parametrs);
+            Parametrs = await generateSHA256(Parametrs);
             user.passwordArray.push(BulkString(Parametrs));
 
             let len = user.flagArray.findIndex(
