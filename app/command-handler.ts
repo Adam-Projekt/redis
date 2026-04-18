@@ -70,6 +70,7 @@ export async function handle(arrayData: string[], connection: net.Socket) {
           let Parametrs: string = getArrayData(8);
           if (Parametrs.startsWith(">")) {
             Parametrs == Parametrs.slice(1);
+            console.log(Parametrs);
             Parametrs = await generateSHA256(Parametrs);
             console.log(Parametrs);
             user.passwordArray.push(BulkString(Parametrs));
