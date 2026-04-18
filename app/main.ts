@@ -20,7 +20,12 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
     switch (command) {
       case "set":
         mem.set(arrayData[4], arrayData[6]);
+        if (arrayData[8] === "px")
+          setTimeout(() => {
+            mem.delete(arrayData[4]);
+          }, +arrayData[10]);
         responseData = "+OK" + CRLF;
+
         connection.write(responseData);
         break;
       case "get":
