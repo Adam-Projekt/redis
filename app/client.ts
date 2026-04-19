@@ -10,7 +10,6 @@ export class Client {
     this.socket = socket;
     this.user = defaultUser;
 
-    // nopass => auto login
     this.authenticated = defaultUser.flagArray.includes("nopass");
   }
 }

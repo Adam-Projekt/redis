@@ -1,6 +1,6 @@
 const CRLF = "\r\n";
 
-export function BulkString(input: string) {
+export function BulkString(input) {
   if (input == undefined) {
     return "$-1" + CRLF;
   }

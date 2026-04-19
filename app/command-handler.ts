@@ -1,5 +1,3 @@
-import * as net from "net";
-
 //my things
 import {
   BulkString,
@@ -10,8 +8,9 @@ import {
 } from "./helper";
 import { Client } from "./client";
 import { User } from "./user";
+import { Data } from "./data";
 
-export const mem = new Map<string, any>();
+export const mem = new Map<string, Data>();
 
 export const users: User[] = [new User("default", ["nopass"], [])];
 
@@ -38,7 +37,7 @@ export async function handle(arrayData: string[], client: Client) {
 
   switch (command) {
     case "SET":
-      mem.set(getArrayData(4), getArrayData(6)); // set the value
+      mem.set(getArrayData(4), new Data([getArrayData(6)])); // set the value
 
       if (getArrayData(8).toLowerCase() === "px")
         setTimeout(() => {
@@ -57,7 +56,7 @@ export async function handle(arrayData: string[], client: Client) {
       break;
     case "GET":
       const data = mem.get(getArrayData(4));
-      client.socket.write(BulkString(data));
+      client.socket.write(BulkString(data?.data[0] || undefined));
       break;
     case "ACL":
       //  //else {
