@@ -39,9 +39,9 @@ export async function handle(arg: string[], client: Client) {
 
   switch (command) {
     case "SET":
-      const include_px = arg.includes("px"); //expire in miliseconds
-      const include_ex = arg.includes("ex"); //expire in seconds
-      const include_nx = arg.includes("nx"); //create only if not exist
+      const include_px = arg.includes("PX"); //expire in miliseconds
+      const include_ex = arg.includes("EX"); //expire in seconds
+      const include_nx = arg.includes("NX"); //create only if not exist
 
       if (arg.length < 3) {
         client.socket.write(SimpleString("Not enough parametrs"));
@@ -55,7 +55,7 @@ export async function handle(arg: string[], client: Client) {
       }
 
       if (include_px) {
-        const index = arg.findIndex((a) => a == "px");
+        const index = arg.findIndex((a) => a == "PX");
         setTimeout(
           () => {
             mem.delete(getData(1));
