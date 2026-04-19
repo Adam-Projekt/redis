@@ -40,11 +40,14 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
         break;
       }
       mem.set(getData(0), new Mem([getData(1)], 0)); // set the value
-
+      console.log(getData(px_index + 1) + ", aaaaaaaa");
       if (px_index !== -1) {
-        setTimeout(() => {
-          mem.delete(getData(0));
-        }, +getData(px_index));
+        setTimeout(
+          () => {
+            mem.delete(getData(0));
+          },
+          +getData(px_index + 1),
+        );
       }
 
       //set expiry in miliseconds
