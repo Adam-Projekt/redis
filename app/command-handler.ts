@@ -83,12 +83,7 @@ export async function Manage(arg: string[], client: Client) {
 
   arg = arg.slice(1); //removes first element and shift
 
-  const allowedWithoutAuth = [Commands.Auth];
-
-  if (!client.authenticated && !allowedWithoutAuth.includes(command)) {
-    client.socket.write(BulkError("NOAUTH Authentication required."));
-    return;
-  }
+ 
   console.log(command);
   if (command == Commands.Not) {
     client.socket.write(SimpleString("PONG")); //command unknown

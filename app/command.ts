@@ -15,7 +15,7 @@ import { User, Mem } from "./class";
 import { mem, users } from "./command-handler";
 import { Commands } from "./commandEnum";
 
-export async function handle(arg: string[], Command: Commands, client: Client) {
+export async function handle(arg: string[], command: Commands, client: Client) {
   //helper function
   function getData(index: number) {
     if (index < arg.length) {
@@ -28,7 +28,12 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
   let username: string;
   let user;
 
-  switch (Command) {
+  if (!client.authenticated && !(command == Commands.Auth)) {
+    client.socket.write(BulkError("NOAUTH Authentication required."));
+    return;
+  }
+
+  switch (command) {
     case Commands.Set:
       const key2 = getData(0);
       const px_index = GetIndex("PX", arg); //expire in miliseconds
