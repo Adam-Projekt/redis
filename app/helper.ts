@@ -44,7 +44,7 @@ export function BulkInteger(input: number) {
 }
 export function Contain(item: string, input: string[]) {
   for (let i = 0; i < input.length; i++) {
-    if (item.toUpperCase == input[i].toUpperCase) {
+    if (item.toUpperCase() == input[i].toUpperCase()) {
       return true;
     }
   }
@@ -52,7 +52,7 @@ export function Contain(item: string, input: string[]) {
 }
 export function GetIndex(item: string, input: string[]) {
   for (let i = 0; i < input.length; i++) {
-    if (item.toUpperCase == input[i].toUpperCase) {
+    if (item.toUpperCase() == input[i].toUpperCase()) {
       return i;
     }
   }

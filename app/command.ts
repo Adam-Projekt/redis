@@ -77,9 +77,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       client.socket.write(BulkString(data?.data[0] || undefined));
       break;
     case Commands.Rpush:
-      
-
-      const key = getData(1);
+      const key = getData(0);
 
       for (let i = 2; i < arg.length; i++) {
         const value = arg[i];
