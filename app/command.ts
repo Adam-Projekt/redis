@@ -38,7 +38,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       if (mem.has(key2) && include_nx) {
         //check if exist and create only if not exist is true
         client.socket.write(NULLBULKSTRING);
-        break;
+        return;
       }
       mem.set(key2, new Mem([getData(1)], 0)); // set the value
       
@@ -67,7 +67,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       const data = mem.get(getData(0));
       if (!data) {
         client.socket.write(NULLBULKSTRING);
-        break;
+        return;
       }
 
       if (data.WhatData !== 0) {
@@ -79,12 +79,12 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
     case Commands.Rpush:
       const key = getData(0);
 
-      for (let i = 2; i < arg.length; i++) {
+      for (let i = 1; i < arg.length; i++) {
         const value = arg[i];
         if (mem.has(key)) {
           if (mem.get(key)?.WhatData !== 1) {
             client.socket.write(BulkError("WRONGTYPE"));
-            break;
+            return;
           }
           mem.get(key)?.data.push(value);
         } else {
