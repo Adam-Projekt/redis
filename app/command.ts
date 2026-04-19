@@ -23,14 +23,14 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
     } else return "";
   }
 
-  const subcommand = getData(1).toUpperCase();
+  const subcommand = getData(0).toUpperCase();
   let index;
   let username: string;
   let user;
 
   switch (Command) {
     case Commands.Set:
-      const key2 = getData(0)
+      const key2 = getData(0);
       const px_index = GetIndex("PX", arg); //expire in miliseconds
       const ex_index = GetIndex("EX", arg); //expire in seconds
       const include_nx = Contain("NX", arg); //create only if not exist
@@ -41,7 +41,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
         return;
       }
       mem.set(key2, new Mem([getData(1)], 0)); // set the value
-      
+
       if (px_index != -1) {
         setTimeout(
           () => {
@@ -151,7 +151,6 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       }
       break; //ACL
     case Commands.Auth:
-      
       username = getData(0);
       user;
       index = users.findIndex((person) => person.name === username);
