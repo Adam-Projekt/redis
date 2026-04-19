@@ -30,22 +30,22 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
 
   switch (Command) {
     case Commands.Set:
-      const key = getData(0)
+      const key2 = getData(0)
       const px_index = GetIndex("PX", arg); //expire in miliseconds
       const ex_index = GetIndex("EX", arg); //expire in seconds
       const include_nx = Contain("NX", arg); //create only if not exist
 
-      if (mem.has(key) && include_nx) {
+      if (mem.has(key2) && include_nx) {
         //check if exist and create only if not exist is true
         client.socket.write(NULLBULKSTRING);
         break;
       }
-      mem.set(key, new Mem([getData(1)], 0)); // set the value
+      mem.set(key2, new Mem([getData(1)], 0)); // set the value
       
       if (px_index != -1) {
         setTimeout(
           () => {
-            mem.delete(key);
+            mem.delete(key2);
           },
           +getData(px_index + 1),
         );
@@ -55,7 +55,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       else if (ex_index != -1) {
         setTimeout(
           () => {
-            mem.delete(key);
+            mem.delete(key2);
           },
           +getData(ex_index + 1) * 1000,
         );
@@ -77,10 +77,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       client.socket.write(BulkString(data?.data[0] || undefined));
       break;
     case Commands.Rpush:
-      if (arg.length < 3) {
-        client.socket.write(SimpleString("Not enough parametrs"));
-        break;
-      }
+      
 
       const key = getData(1);
 
@@ -156,10 +153,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       }
       break; //ACL
     case Commands.Auth:
-      if (arg.length < 3) {
-        client.socket.write(SimpleString("Not enough parametrs"));
-        break;
-      }
+      
       username = getData(1);
       user;
       index = users.findIndex((person) => person.name === username);

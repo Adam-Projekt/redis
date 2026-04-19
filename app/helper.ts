@@ -47,8 +47,8 @@ export function Contain(item: string, input: string[]) {
     if (item.toUpperCase == input[i].toUpperCase) {
       return true;
     }
-    return false;
   }
+  return false;
 }
 export function GetIndex(item: string, input: string[]) {
   for (let i = 0; i < input.length; i++) {
