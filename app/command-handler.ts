@@ -111,7 +111,7 @@ export async function handle(arg: string[], client: Client) {
         }
         value = getData(2 + i);
       }
-
+      console.log("finish")
       client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
       break;
     case "ACL":
