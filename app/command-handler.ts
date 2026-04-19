@@ -140,7 +140,7 @@ export async function handle(arg: string[], client: Client) {
           client.socket.write(array);
           break;
         case "SETUSER":
-          username = getData(1);
+          username = getData(2);
           user;
           index = users.findIndex((person) => person.name === username);
           if (index >= 0) {
@@ -150,7 +150,7 @@ export async function handle(arg: string[], client: Client) {
             client.socket.write(SimpleString("User not found"));
             break;
           }
-          let Parametrs: string = getData(2);
+          let Parametrs: string = getData(3);
           if (Parametrs.startsWith(">")) {
             let password = Parametrs.slice(1);
             password = await generateSHA256(password);
@@ -204,7 +204,7 @@ export async function handle(arg: string[], client: Client) {
       }
       break;
     case "ECHO":
-      if (arg.length < 1) {
+      if (arg.length != 1) {
         client.socket.write(SimpleString("Not enough parametrs"));
       }
       client.socket.write(BulkString(getData(1)));
