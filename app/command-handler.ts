@@ -82,7 +82,7 @@ export async function handle(arg: string[], client: Client) {
         client.socket.write(SimpleString("Not enough parametrs"));
       }
       const data = mem.get(getData(1));
-      if (data?.WhatData !== 0) {
+      if (data?.WhatData || 0 !== 0) {
         client.socket.write(BulkError("WRONGTYPE"));
         break;
       }
