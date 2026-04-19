@@ -40,7 +40,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
         break;
       }
       mem.set(getData(0), new Mem([getData(1)], 0)); // set the value
-
+      console.log(getData(4));
       if (px_index !== -1) {
         setTimeout(() => {
           mem.delete(getData(0));
