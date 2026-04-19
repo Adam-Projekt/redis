@@ -101,10 +101,10 @@ export async function handle(arg: string[], client: Client) {
           break;
         }
         mem.get(key)?.data.push(value);
-        client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
       } else {
         mem.set(key, new Mem([value], 1));
       }
+      client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
       break;
     case "ACL":
       if (arg.length < 2) {
