@@ -11,6 +11,6 @@ export class Client {
     this.user = defaultUser;
 
     // nopass => auto login
-    this.authenticated = defaultUser.flagArray.includes("$6\r\nnopass\r\n");
+    this.authenticated = defaultUser.flagArray.includes("nopass");
   }
 }

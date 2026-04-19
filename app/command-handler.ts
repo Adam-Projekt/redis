@@ -17,9 +17,7 @@ export const users: User[] = [
   new User(
     "default",
     ["nopass"],
-    [
-      "$64\r\n89e01536ac207279409d4de1e5253e01f4a1769e696db0d6062ca9b8f56767c8\r\n",
-    ],
+    ["$6489e01536ac207279409d4de1e5253e01f4a1769e696db0d6062ca9b8f56767c8"],
   ),
 ];
 
@@ -75,7 +73,7 @@ export async function handle(arrayData: string[], client: Client) {
         user = users[index];
         console.log(user);
       } else {
-        if (subcommand == "WHOAMI") {
+        if (subcommand !== "GETUSER" || "SETUSER") {
           let data = client.user?.name;
           if (data == null) {
             data = "default";
@@ -94,13 +92,16 @@ export async function handle(arrayData: string[], client: Client) {
           client.socket.write(BulkString(data));
           break;
         case "GETUSER":
-          const array = BulkArray([
-            BulkString("flags"),
-            BulkArray(user.flagArray),
-            BulkString("passwords"),
-            BulkArray(user.passwordArray),
-          ]);
-          console.log(array);
+          const array = BulkArray(
+            [
+              BulkString("flags"),
+              BulkArray(user.flagArray),
+              BulkString("passwords"),
+              BulkArray(user.passwordArray),
+            ],
+            false,
+          );
+          console.log(array + "dadss");
           client.socket.write(array);
           break;
         case "SETUSER":
@@ -112,9 +113,7 @@ export async function handle(arrayData: string[], client: Client) {
             console.log(password);
             user.passwordArray.push(password);
 
-            let len = user.flagArray.findIndex(
-              (flag) => flag === "nopass",
-            );
+            let len = user.flagArray.findIndex((flag) => flag === "nopass");
             if (len !== -1) {
               user.flagArray.splice(len, 1);
             }
@@ -144,7 +143,7 @@ export async function handle(arrayData: string[], client: Client) {
       let InputPassword = await generateSHA256(getArrayData(6));
       let PasswordArray = user.passwordArray;
       let result = PasswordArray.findIndex((a) => a === InputPassword);
-      if (user.flagArray.findIndex((a) => a === "nopass") !== -1) {
+      if (user.flagArray.includes("nopass")) {
         result = 1;
       }
       if (result == -1) {

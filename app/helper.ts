@@ -9,10 +9,14 @@ export function BulkString(input: string) {
 export function SimpleString(input: string) {
   return "+" + input + CRLF;
 }
-export function BulkArray(input: string[]) {
+export function BulkArray(input: string[], connect: boolean = true) {
   let arrays: string = "";
-  for (let i = 0; i < input.length; i++) {
-    arrays += BulkString(input[i]);
+  if (connect) {
+    for (let i = 0; i < input.length; i++) {
+      arrays += BulkString(input[i]);
+    }
+  } else {
+    arrays = input.join("");
   }
 
   return "*" + input.length + CRLF + arrays;
