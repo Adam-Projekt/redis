@@ -152,7 +152,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       break; //ACL
     case Commands.Auth:
       
-      username = getData(1);
+      username = getData(0);
       user;
       index = users.findIndex((person) => person.name === username);
       if (index >= 0) {
@@ -166,7 +166,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
         ); //BulkError
         break;
       }
-      const InputPassword = await generateSHA256(getData(2));
+      const InputPassword = await generateSHA256(getData(1));
       const PasswordArray = user.passwordArray;
       let result = PasswordArray.findIndex((a) => a === InputPassword);
 
