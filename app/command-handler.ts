@@ -111,13 +111,13 @@ export async function handle(arg: string[], client: Client) {
         client.socket.write(SimpleString("Not enough parametrs"));
         break;
       }
+      username = getData(2);
       switch (subcommand) {
         case "WHOAMI":
           const data = client.user?.name || "default";
           client.socket.write(BulkString(data));
           break;
         case "GETUSER":
-          username = getData(1);
           user;
           index = users.findIndex((person) => person.name === username);
           if (index >= 0) {
@@ -140,8 +140,6 @@ export async function handle(arg: string[], client: Client) {
           client.socket.write(array);
           break;
         case "SETUSER":
-          username = getData(2);
-          user;
           index = users.findIndex((person) => person.name === username);
           if (index >= 0) {
             user = users[index];
