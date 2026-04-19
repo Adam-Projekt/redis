@@ -60,32 +60,36 @@ export async function handle(arrayData: string[], client: Client) {
       client.socket.write(BulkString(data));
       break;
     case "ACL":
-      username = getArrayData(6);
-      user;
-      index = users.findIndex((person) => person.name === username);
-      if (index >= 0) {
-        user = users[index];
-        console.log(user);
-      } else {
-        if (subcommand !== "GETUSER" || "SETUSER") {
-          let data = client.user?.name;
-          if (data == null) {
-            data = "default";
-          }
+      //  //else {
+      //   if (subcommand !== "GETUSER" || "SETUSER") {
+      //     let data = client.user?.name;
+      //     if (data == null) {
+      //       data = "default";
+      //     }
 
-          client.socket.write(BulkString(data));
-        } else {
-          client.socket.write(BulkString("User not exist"));
-        }
-        break;
-      }
+      //     client.socket.write(BulkString(data));
+      //   } else {
+      //     client.socket.write(BulkString("User not exist"));
+      //   }
+      //   break;
+      // }
 
       switch (subcommand) {
         case "WHOAMI":
-          const data = "default";
+          const data = client.user?.name || "default";
           client.socket.write(BulkString(data));
           break;
         case "GETUSER":
+          username = getArrayData(6);
+          user;
+          index = users.findIndex((person) => person.name === username);
+          if (index >= 0) {
+            user = users[index];
+            console.log(user);
+          } else {
+            client.socket.write(SimpleString("User not found"));
+            break;
+          }
           const array = BulkArray(
             [
               BulkString("flags"),
@@ -99,12 +103,20 @@ export async function handle(arrayData: string[], client: Client) {
           client.socket.write(array);
           break;
         case "SETUSER":
+          username = getArrayData(6);
+          user;
+          index = users.findIndex((person) => person.name === username);
+          if (index >= 0) {
+            user = users[index];
+            console.log(user);
+          } else {
+            client.socket.write(SimpleString("User not found"));
+            break;
+          }
           let Parametrs: string = getArrayData(8);
           if (Parametrs.startsWith(">")) {
             let password = Parametrs.slice(1);
-            console.log(password);
             password = await generateSHA256(password);
-            console.log(password);
             user.passwordArray.push(password);
 
             let len = user.flagArray.findIndex((flag) => flag === "nopass");
