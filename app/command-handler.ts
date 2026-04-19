@@ -81,7 +81,7 @@ export async function Manage(arg: string[], client: Client) {
       break;
   }
 
-  arg.slice(1); //removes first element and shift
+  arg = arg.slice(1); //removes first element and shift
 
   const allowedWithoutAuth = [Commands.Auth];
 
