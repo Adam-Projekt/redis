@@ -95,7 +95,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
       break; //Rpush
     case Commands.Acl:
-      username = getData(1);
+      username = getData(0);
       switch (subcommand) {
         case "WHOAMI":
           const data = client.user?.name || "default";
@@ -132,7 +132,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
             client.socket.write(SimpleString("User not found"));
             break;
           }
-          let Parametrs: string = getData(3);
+          let Parametrs: string = getData(1);
           if (Parametrs.startsWith(">")) {
             let password = Parametrs.slice(1);
             password = await generateSHA256(password);
