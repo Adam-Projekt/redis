@@ -29,7 +29,7 @@ export async function handle(arrayData: string[], client: Client) {
   let username: string;
   let user;
 
-  const allowedWithoutAuth = ["AUTH", "PING"];
+  const allowedWithoutAuth = ["AUTH"];
 
   if (!client.authenticated && !allowedWithoutAuth.includes(command)) {
     client.socket.write(BulkError("NOAUTH Authentication required."));
