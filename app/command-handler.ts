@@ -204,7 +204,7 @@ export async function handle(arg: string[], client: Client) {
       }
       break;
     case "ECHO":
-      if (arg.length != 1) {
+      if (arg.length != 2) {
         client.socket.write(SimpleString("Not enough parametrs"));
       }
       client.socket.write(BulkString(getData(1)));
