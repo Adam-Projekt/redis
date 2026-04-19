@@ -1,5 +1,3 @@
-import { createHash } from "crypto";
-
 const CRLF = "\r\n";
 
 export function BulkString(input: string) {
@@ -32,4 +30,3 @@ export async function generateSHA256(input: string): Promise<string> {
 export function BulkError(input: string) {
   return "-" + input + CRLF;
 }
-console.log(BulkString(await generateSHA256("mypassword")));

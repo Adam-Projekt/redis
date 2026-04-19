@@ -8,11 +8,12 @@ import {
   generateSHA256,
   BulkError,
 } from "./helper";
+import { Client } from "./client";
 import { User } from "./user";
 
-const mem = new Map<string, any>();
+export const mem = new Map<string, any>();
 
-const users: User[] = [
+export const users: User[] = [
   new User(
     "default",
     [BulkString("nopass")],
@@ -22,7 +23,7 @@ const users: User[] = [
   ),
 ];
 
-export async function handle(arrayData: string[], connection: net.Socket) {
+export async function handle(arrayData: string[], client: Client) {
   //helper function
   function getArrayData(index: number) {
     if (index < arrayData.length) {
@@ -30,12 +31,18 @@ export async function handle(arrayData: string[], connection: net.Socket) {
     } else return "";
   }
 
-  const command = getArrayData(2).toLocaleUpperCase();
+  const command = getArrayData(2).toUpperCase();
   const subcommand = getArrayData(4).toLocaleUpperCase();
-  const subsubcommand = getArrayData(6).toLocaleUpperCase();
   let index;
   let username: string;
   let user;
+
+  const allowedWithoutAuth = ["AUTH", "PING"];
+
+  if (!client.authenticated && !allowedWithoutAuth.includes(command)) {
+    client.socket.write(BulkError("NOAUTH Authentication required."));
+    return;
+  }
 
   switch (command) {
     case "SET":
@@ -54,11 +61,11 @@ export async function handle(arrayData: string[], connection: net.Socket) {
           +getArrayData(10) * 1000,
         ); //set expiry in second
 
-      connection.write(SimpleString("OK")); //return succes
+      client.socket.write(SimpleString("OK")); //return succes
       break;
     case "GET":
       const data = mem.get(getArrayData(4));
-      connection.write(BulkString(data));
+      client.socket.write(BulkString(data));
       break;
     case "ACL":
       username = getArrayData(6);
@@ -69,10 +76,14 @@ export async function handle(arrayData: string[], connection: net.Socket) {
         console.log(user);
       } else {
         if (subcommand == "WHOAMI") {
-          const data = "default";
-          connection.write(BulkString(data));
+          let data = client.user?.name;
+          if (data == null) {
+            data = "default";
+          }
+
+          client.socket.write(BulkString(data));
         } else {
-          connection.write(BulkString("User not exist"));
+          client.socket.write(BulkString("User not exist"));
         }
         break;
       }
@@ -80,7 +91,7 @@ export async function handle(arrayData: string[], connection: net.Socket) {
       switch (subcommand) {
         case "WHOAMI":
           const data = "default";
-          connection.write(BulkString(data));
+          client.socket.write(BulkString(data));
           break;
         case "GETUSER":
           const array = BulkArray([
@@ -90,7 +101,7 @@ export async function handle(arrayData: string[], connection: net.Socket) {
             BulkArray(user.passwordArray),
           ]);
           console.log(array);
-          connection.write(array);
+          client.socket.write(array);
           break;
         case "SETUSER":
           let Parametrs: string = getArrayData(8);
@@ -106,10 +117,10 @@ export async function handle(arrayData: string[], connection: net.Socket) {
             );
             user.flagArray.splice(len, 1);
           }
-          connection.write(SimpleString("OK"));
+          client.socket.write(SimpleString("OK"));
           break;
         default:
-          connection.write(BulkString("Command not found"));
+          client.socket.write(BulkString("Command not found"));
           break;
       }
       break;
@@ -121,7 +132,7 @@ export async function handle(arrayData: string[], connection: net.Socket) {
         user = users[index];
         console.log(user);
       } else {
-        connection.write(
+        client.socket.write(
           BulkError(
             "WRONGPASS invalid username-password pair or user is disabled.",
           ),
@@ -135,23 +146,25 @@ export async function handle(arrayData: string[], connection: net.Socket) {
         result = 1;
       }
       if (result == -1) {
-        connection.write(
+        client.socket.write(
           BulkError(
             "WRONGPASS invalid username-password pair or user is disabled.",
           ),
         ); //BulkError
       } else {
-        connection.write(SimpleString("OK"));
+        client.authenticated = true;
+        client.user = user;
+        client.socket.write(SimpleString("OK"));
       }
       break;
     case "ECHO":
-      connection.write(BulkString(getArrayData(4)));
+      client.socket.write(BulkString(getArrayData(4)));
       break;
     case "PING":
-      connection.write(SimpleString("PONG"));
+      client.socket.write(SimpleString("PONG"));
       break;
     default:
-      connection.write(SimpleString("PONG"));
+      client.socket.write(SimpleString("PONG"));
       break;
   }
 }
