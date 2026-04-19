@@ -49,12 +49,12 @@ export async function handle(arg: string[], client: Client) {
         client.socket.write(SimpleString("Not enough parametrs"));
         break;
       }
-      if (!(mem.has(getData(1)) && include_nx)) {
+      if (mem.has(getData(1)) && include_nx) {
         //check if exist and create only if not exist is true
-        mem.set(getData(1), new Mem([getData(2)], 0)); // set the value
-      } else {
         client.socket.write(NULLBULKSTRING);
+        break;
       }
+      mem.set(getData(1), new Mem([getData(2)], 0)); // set the value
 
       if (px_index !== -1) {
         setTimeout(
@@ -82,7 +82,7 @@ export async function handle(arg: string[], client: Client) {
         client.socket.write(SimpleString("Not enough parametrs"));
       }
       const data = mem.get(getData(1));
-      if (data?.WhatData || 0 !== 0) {
+      if (data?.WhatData !== 0) {
         client.socket.write(BulkError("WRONGTYPE"));
         break;
       }
@@ -95,11 +95,9 @@ export async function handle(arg: string[], client: Client) {
       }
 
       const key = getData(1);
-      let value = getData(2);
 
-      let i = 0;
-      while (value != null) {
-        i++;
+      for (let i = 2; i < arg.length; i++) {
+        const value = arg[i];
         if (mem.has(key)) {
           if (mem.get(key)?.WhatData !== 1) {
             client.socket.write(BulkError("WRONGTYPE"));
@@ -109,7 +107,6 @@ export async function handle(arg: string[], client: Client) {
         } else {
           mem.set(key, new Mem([value], 1));
         }
-        value = getData(1 + i);
       }
       console.log("finish");
       client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
