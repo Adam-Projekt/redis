@@ -13,7 +13,15 @@ import { User } from "./user";
 
 export const mem = new Map<string, any>();
 
-export const users: User[] = [new User("default", [BulkString("nopass")], [])];
+export const users: User[] = [
+  new User(
+    "default",
+    ["nopass"],
+    [
+      "$64\r\n89e01536ac207279409d4de1e5253e01f4a1769e696db0d6062ca9b8f56767c8\r\n",
+    ],
+  ),
+];
 
 export async function handle(arrayData: string[], client: Client) {
   //helper function
@@ -102,12 +110,14 @@ export async function handle(arrayData: string[], client: Client) {
             console.log(password);
             password = await generateSHA256(password);
             console.log(password);
-            user.passwordArray.push(BulkString(password));
+            user.passwordArray.push(password);
 
             let len = user.flagArray.findIndex(
-              (flag) => flag === BulkString("nopass"),
+              (flag) => flag === "nopass",
             );
-            user.flagArray.splice(len, 1);
+            if (len !== -1) {
+              user.flagArray.splice(len, 1);
+            }
           }
           client.socket.write(SimpleString("OK"));
           break;
@@ -131,10 +141,10 @@ export async function handle(arrayData: string[], client: Client) {
         ); //BulkError
         break;
       }
-      let InputPassword = BulkString(await generateSHA256(getArrayData(6)));
+      let InputPassword = await generateSHA256(getArrayData(6));
       let PasswordArray = user.passwordArray;
       let result = PasswordArray.findIndex((a) => a === InputPassword);
-      if (user.flagArray.findIndex((a) => a === BulkString("nopass")) !== -1) {
+      if (user.flagArray.findIndex((a) => a === "nopass") !== -1) {
         result = 1;
       }
       if (result == -1) {

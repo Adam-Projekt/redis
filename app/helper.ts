@@ -10,7 +10,11 @@ export function SimpleString(input: string) {
   return "+" + input + CRLF;
 }
 export function BulkArray(input: string[]) {
-  let arrays = input.join("");
+  let arrays: string = "";
+  for (let i = 0; i < input.length; i++) {
+    arrays += BulkString(input[i]);
+  }
+
   return "*" + input.length + CRLF + arrays;
 }
 
