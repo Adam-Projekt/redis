@@ -42,3 +42,19 @@ export function BulkError(input: string) {
 export function BulkInteger(input: number) {
   return ":" + input + CRLF;
 }
+export function Contain(item: string, input: string[]) {
+  for (let i = 0; i < input.length; i++) {
+    if (item.toUpperCase == input[i].toUpperCase) {
+      return true;
+    }
+    return false;
+  }
+}
+export function GetIndex(item: string, input: string[]) {
+  for (let i = 0; i < input.length; i++) {
+    if (item.toUpperCase == input[i].toUpperCase) {
+      return i;
+    }
+  }
+  return -1;
+}

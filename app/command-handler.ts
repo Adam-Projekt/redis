@@ -6,6 +6,8 @@ import {
   generateSHA256,
   BulkError,
   BulkInteger,
+  Contain,
+  GetIndex,
   NULLBULKSTRING,
 } from "./helper";
 import { Client } from "./client";
@@ -39,9 +41,9 @@ export async function handle(arg: string[], client: Client) {
 
   switch (command) {
     case "SET":
-      const include_px = arg.includes("PX"); //expire in miliseconds
-      const include_ex = arg.includes("EX"); //expire in seconds
-      const include_nx = arg.includes("NX"); //create only if not exist
+      const px_index = GetIndex("PX", arg); //expire in miliseconds
+      const ex_index = GetIndex("EX", arg); //expire in seconds
+      const include_nx = Contain("NX", arg); //create only if not exist
 
       if (arg.length < 3) {
         client.socket.write(SimpleString("Not enough parametrs"));
@@ -54,24 +56,22 @@ export async function handle(arg: string[], client: Client) {
         client.socket.write(NULLBULKSTRING);
       }
 
-      if (include_px) {
-        const index = arg.findIndex((a) => a == "PX");
+      if (px_index !== -1) {
         setTimeout(
           () => {
             mem.delete(getData(1));
           },
-          +getData(index + 1),
+          +getData(px_index + 1),
         );
       }
 
       //set expiry in miliseconds
-      else if (include_ex) {
-        const index = arg.findIndex((a) => a == "ex");
+      else if (ex_index !== -1) {
         setTimeout(
           () => {
             mem.delete(getData(1));
           },
-          +getData(index + 1) * 1000,
+          +getData(ex_index + 1) * 1000,
         );
       }
 
@@ -89,21 +89,29 @@ export async function handle(arg: string[], client: Client) {
       client.socket.write(BulkString(data?.data[0] || undefined));
       break;
     case "RPUSH":
-      const key = getData(1);
-      const value = getData(2);
       if (arg.length < 3) {
         client.socket.write(SimpleString("Not enough parametrs"));
         break;
       }
-      if (mem.has(key)) {
-        if (mem.get(key)?.WhatData !== 1) {
-          client.socket.write(BulkError("WRONGTYPE"));
-          break;
+
+      const key = getData(1);
+      let value = getData(2);
+
+      let i = 0;
+      while (value != null) {
+        i++;
+        if (mem.has(key)) {
+          if (mem.get(key)?.WhatData !== 1) {
+            client.socket.write(BulkError("WRONGTYPE"));
+            break;
+          }
+          mem.get(key)?.data.push(value);
+        } else {
+          mem.set(key, new Mem([value], 1));
         }
-        mem.get(key)?.data.push(value);
-      } else {
-        mem.set(key, new Mem([value], 1));
+        value = getData(2 + i);
       }
+
       client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
       break;
     case "ACL":
