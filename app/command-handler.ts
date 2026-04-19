@@ -13,13 +13,7 @@ import { User } from "./user";
 
 export const mem = new Map<string, any>();
 
-export const users: User[] = [
-  new User(
-    "default",
-    ["nopass"],
-    ["$6489e01536ac207279409d4de1e5253e01f4a1769e696db0d6062ca9b8f56767c8"],
-  ),
-];
+export const users: User[] = [new User("default", ["nopass"], [])];
 
 export async function handle(arrayData: string[], client: Client) {
   //helper function
