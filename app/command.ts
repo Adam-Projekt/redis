@@ -95,14 +95,13 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
       break; //Rpush
     case Commands.Acl:
-      username = getData(0);
+      username = getData(1);
       switch (subcommand) {
         case "WHOAMI":
           const data = client.user?.name || "default";
           client.socket.write(BulkString(data));
           break;
         case "GETUSER":
-          user;
           index = users.findIndex((person) => person.name === username);
           if (index >= 0) {
             user = users[index];
