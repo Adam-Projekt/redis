@@ -137,7 +137,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
             password = await generateSHA256(password);
             user.passwordArray.push(password);
 
-            GetIndex("nopass", user.flagArray);
+            const len = GetIndex("nopass", user.flagArray);
             if (len !== -1) {
               user.flagArray.splice(len, 1);
             }
