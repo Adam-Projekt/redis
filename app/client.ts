@@ -1,5 +1,5 @@
 import * as net from "net";
-import { User } from "./user";
+import { User } from "./class";
 
 export class Client {
   socket: net.Socket;

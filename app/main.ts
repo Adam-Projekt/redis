@@ -1,5 +1,5 @@
 import * as net from "net";
-import { handle } from "./command-handler";
+import { Manage } from "./command-handler";
 import { Client } from "./client";
 import { users } from "./command-handler";
 
@@ -17,7 +17,7 @@ const server = net.createServer((connection) => {
       }
     }
     console.log(UserData);
-    handle(UserData, client);
+    Manage(UserData, client);
   });
 });
 
