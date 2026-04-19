@@ -10,7 +10,14 @@ const server = net.createServer((connection) => {
 
   connection.on("data", (data) => {
     const arrayData = data.toString().split("\r\n");
-    handle(arrayData, client);
+    const UserData = [];
+    for (let i = 0; i < arrayData.length; i++) {
+      if (i % 2 == 0 && i > 1) {
+        UserData.push(arrayData[i]);
+      }
+    }
+    console.log(UserData);
+    handle(UserData, client);
   });
 });
 

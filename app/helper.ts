@@ -1,6 +1,7 @@
-const CRLF = "\r\n";
+export const CRLF = "\r\n";
+export const NULLBULKSTRING = "$-1\r\n";
 
-export function BulkString(input) {
+export function BulkString(input: any) {
   if (input == undefined) {
     return "$-1" + CRLF;
   }
@@ -37,4 +38,7 @@ export async function generateSHA256(input: string): Promise<string> {
 }
 export function BulkError(input: string) {
   return "-" + input + CRLF;
+}
+export function BulkInteger(input: number) {
+  return ":" + input + CRLF;
 }

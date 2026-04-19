@@ -5,25 +5,27 @@ import {
   BulkArray,
   generateSHA256,
   BulkError,
+  BulkInteger,
+  NULLBULKSTRING,
 } from "./helper";
 import { Client } from "./client";
 import { User } from "./user";
-import { Data } from "./data";
+import { Mem } from "./data";
 
-export const mem = new Map<string, Data>();
+export const mem = new Map<string, Mem>();
 
 export const users: User[] = [new User("default", ["nopass"], [])];
 
-export async function handle(arrayData: string[], client: Client) {
+export async function handle(arg: string[], client: Client) {
   //helper function
-  function getArrayData(index: number) {
-    if (index < arrayData.length) {
-      return arrayData[index];
+  function getData(index: number) {
+    if (index < arg.length) {
+      return arg[index];
     } else return "";
   }
 
-  const command = getArrayData(2).toUpperCase();
-  const subcommand = getArrayData(4).toLocaleUpperCase();
+  const command = getData(0).toUpperCase();
+  const subcommand = getData(1).toUpperCase();
   let index;
   let username: string;
   let user;
@@ -37,49 +39,85 @@ export async function handle(arrayData: string[], client: Client) {
 
   switch (command) {
     case "SET":
-      mem.set(getArrayData(4), new Data([getArrayData(6)])); // set the value
+      const include_px = arg.includes("px"); //expire in miliseconds
+      const include_ex = arg.includes("ex"); //expire in seconds
+      const include_nx = arg.includes("nx"); //create only if not exist
 
-      if (getArrayData(8).toLowerCase() === "px")
-        setTimeout(() => {
-          mem.delete(getArrayData(4));
-        }, +getArrayData(10));
-      //set expiry in miliseconds
-      else if (getArrayData(8).toLowerCase() === "ex")
+      if (arg.length < 3) {
+        client.socket.write(SimpleString("Not enough parametrs"));
+        break;
+      }
+      if (!(mem.has(getData(1)) && include_nx)) {
+        //check if exist and create only if not exist is true
+        mem.set(getData(1), new Mem([getData(2)], 0)); // set the value
+      } else {
+        client.socket.write(NULLBULKSTRING);
+      }
+
+      if (include_px) {
+        const index = arg.findIndex((a) => a == "px");
         setTimeout(
           () => {
-            mem.delete(getArrayData(4));
+            mem.delete(getData(1));
           },
-          +getArrayData(10) * 1000,
-        ); //set expiry in second
+          +getData(index + 1),
+        );
+      }
+
+      //set expiry in miliseconds
+      else if (include_ex) {
+        const index = arg.findIndex((a) => a == "ex");
+        setTimeout(
+          () => {
+            mem.delete(getData(1));
+          },
+          +getData(index + 1) * 1000,
+        );
+      }
 
       client.socket.write(SimpleString("OK")); //return succes
       break;
     case "GET":
-      const data = mem.get(getArrayData(4));
+      if (arg.length < 2) {
+        client.socket.write(SimpleString("Not enough parametrs"));
+      }
+      const data = mem.get(getData(1));
+      if (data?.WhatData !== 0) {
+        client.socket.write(BulkError("WRONGTYPE"));
+        break;
+      }
       client.socket.write(BulkString(data?.data[0] || undefined));
       break;
+    case "RPUSH":
+      const key = getData(1);
+      const value = getData(2);
+      if (arg.length < 3) {
+        client.socket.write(SimpleString("Not enough parametrs"));
+        break;
+      }
+      if (mem.has(key)) {
+        if (mem.get(key)?.WhatData !== 1) {
+          client.socket.write(BulkError("WRONGTYPE"));
+          break;
+        }
+        mem.get(key)?.data.push(value);
+        client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
+      } else {
+        mem.set(key, new Mem([value], 1));
+      }
+      break;
     case "ACL":
-      //  //else {
-      //   if (subcommand !== "GETUSER" || "SETUSER") {
-      //     let data = client.user?.name;
-      //     if (data == null) {
-      //       data = "default";
-      //     }
-
-      //     client.socket.write(BulkString(data));
-      //   } else {
-      //     client.socket.write(BulkString("User not exist"));
-      //   }
-      //   break;
-      // }
-
+      if (arg.length < 2) {
+        client.socket.write(SimpleString("Not enough parametrs"));
+        break;
+      }
       switch (subcommand) {
         case "WHOAMI":
           const data = client.user?.name || "default";
           client.socket.write(BulkString(data));
           break;
         case "GETUSER":
-          username = getArrayData(6);
+          username = getData(1);
           user;
           index = users.findIndex((person) => person.name === username);
           if (index >= 0) {
@@ -102,7 +140,7 @@ export async function handle(arrayData: string[], client: Client) {
           client.socket.write(array);
           break;
         case "SETUSER":
-          username = getArrayData(6);
+          username = getData(1);
           user;
           index = users.findIndex((person) => person.name === username);
           if (index >= 0) {
@@ -112,7 +150,7 @@ export async function handle(arrayData: string[], client: Client) {
             client.socket.write(SimpleString("User not found"));
             break;
           }
-          let Parametrs: string = getArrayData(8);
+          let Parametrs: string = getData(2);
           if (Parametrs.startsWith(">")) {
             let password = Parametrs.slice(1);
             password = await generateSHA256(password);
@@ -131,7 +169,11 @@ export async function handle(arrayData: string[], client: Client) {
       }
       break;
     case "AUTH":
-      username = getArrayData(4);
+      if (arg.length < 3) {
+        client.socket.write(SimpleString("Not enough parametrs"));
+        break;
+      }
+      username = getData(1);
       user;
       index = users.findIndex((person) => person.name === username);
       if (index >= 0) {
@@ -145,26 +187,27 @@ export async function handle(arrayData: string[], client: Client) {
         ); //BulkError
         break;
       }
-      let InputPassword = await generateSHA256(getArrayData(6));
-      let PasswordArray = user.passwordArray;
+      const InputPassword = await generateSHA256(getData(2));
+      const PasswordArray = user.passwordArray;
       let result = PasswordArray.findIndex((a) => a === InputPassword);
-      if (user.flagArray.includes("nopass")) {
-        result = 1;
-      }
-      if (result == -1) {
+
+      if (result !== -1 || user.flagArray.includes("nopass")) {
+        client.authenticated = true;
+        client.user = user;
+        client.socket.write(SimpleString("OK"));
+      } else {
         client.socket.write(
           BulkError(
             "WRONGPASS invalid username-password pair or user is disabled.",
           ),
-        ); //BulkError
-      } else {
-        client.authenticated = true;
-        client.user = user;
-        client.socket.write(SimpleString("OK"));
+        ); // BulkError
       }
       break;
     case "ECHO":
-      client.socket.write(BulkString(getArrayData(4)));
+      if (arg.length < 1) {
+        client.socket.write(SimpleString("Not enough parametrs"));
+      }
+      client.socket.write(BulkString(getData(1)));
       break;
     case "PING":
       client.socket.write(SimpleString("PONG"));
