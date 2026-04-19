@@ -42,12 +42,9 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
       mem.set(getData(0), new Mem([getData(1)], 0)); // set the value
 
       if (px_index !== -1) {
-        setTimeout(
-          () => {
-            mem.delete(getData(0));
-          },
-          +Number(getData(px_index + 1)),
-        );
+        setTimeout(() => {
+          mem.delete(getData(0));
+        }, +getData(px_index));
       }
 
       //set expiry in miliseconds
