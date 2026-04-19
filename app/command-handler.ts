@@ -24,7 +24,7 @@ export async function Manage(arg: string[], client: Client) {
   let command: Commands = Commands.Not;
   switch (input) {
     case "SET":
-      if (arg.length - 1 > 2) {
+      if (arg.length > 2) {
         command = Commands.Set;
       } else {
         client.socket.write(BulkError("ERR Not enough arguments"));
@@ -33,7 +33,7 @@ export async function Manage(arg: string[], client: Client) {
 
       break;
     case "GET":
-      if (arg.length - 1 > 1) {
+      if (arg.length > 1) {
         command = Commands.Get;
       } else {
         client.socket.write(BulkError("ERR Not enough arguments"));
@@ -42,7 +42,7 @@ export async function Manage(arg: string[], client: Client) {
 
       break;
     case "RPUSH":
-      if (arg.length - 1 > 2) {
+      if (arg.length > 2) {
         command = Commands.Rpush;
       } else {
         client.socket.write(BulkError("ERR Not enough arguments"));
@@ -50,7 +50,7 @@ export async function Manage(arg: string[], client: Client) {
       }
       break;
     case "ACL":
-      if (arg.length - 1 > 1) {
+      if (arg.length > 1) {
         command = Commands.Acl;
       } else {
         client.socket.write(BulkError("ERR Not enough arguments"));
@@ -59,7 +59,7 @@ export async function Manage(arg: string[], client: Client) {
 
       break;
     case "AUTH":
-      if (arg.length - 1 > 2) {
+      if (arg.length > 2) {
         command = Commands.Auth;
       } else {
         client.socket.write(BulkError("ERR Not enough arguments"));
@@ -67,7 +67,7 @@ export async function Manage(arg: string[], client: Client) {
       }
       break;
     case "ECHO":
-      if (arg.length - 1 > 1) {
+      if (arg.length > 1) {
         command = Commands.Echo;
       } else {
         client.socket.write(BulkError("ERR Not enough arguments"));
