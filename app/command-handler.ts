@@ -46,7 +46,7 @@ export async function handle(arg: string[], client: Client) {
       const include_nx = Contain("NX", arg); //create only if not exist
 
       if (arg.length < 3) {
-        client.socket.write(SimpleString("Not enough parametrs"));
+        client.socket.write(BulkError("ERR wrong number of arguments"));
         break;
       }
       if (mem.has(getData(1)) && include_nx) {
@@ -79,10 +79,15 @@ export async function handle(arg: string[], client: Client) {
       break;
     case "GET":
       if (arg.length < 2) {
-        client.socket.write(SimpleString("Not enough parametrs"));
+        client.socket.write(BulkError("ERR wrong number of arguments"));
       }
       const data = mem.get(getData(1));
-      if (data?.WhatData !== 0) {
+      if (!data) {
+        client.socket.write(NULLBULKSTRING);
+        break;
+      }
+
+      if (data.WhatData !== 0) {
         client.socket.write(BulkError("WRONGTYPE"));
         break;
       }
