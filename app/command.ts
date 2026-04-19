@@ -30,7 +30,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
 
   switch (Command) {
     case Commands.Set:
-      const px_index = GetIndex("PX", arg); //expire in miliseconds
+      const px_index = Contain("PX", arg); //expire in miliseconds
       const ex_index = GetIndex("EX", arg); //expire in seconds
       const include_nx = Contain("NX", arg); //create only if not exist
 
@@ -40,8 +40,8 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
         break;
       }
       mem.set(getData(0), new Mem([getData(1)], 0)); // set the value
-      console.log(getData(4));
-      if (px_index !== -1) {
+      
+      if (px_index) {
         setTimeout(() => {
           mem.delete(getData(0));
         }, +getData(4));
