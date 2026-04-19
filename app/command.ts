@@ -46,7 +46,7 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
           () => {
             mem.delete(getData(0));
           },
-          +getData(px_index + 1),
+          +Number(getData(px_index + 1)),
         );
       }
 
