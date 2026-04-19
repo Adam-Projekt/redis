@@ -30,28 +30,32 @@ export async function handle(arg: string[], Command: Commands, client: Client) {
 
   switch (Command) {
     case Commands.Set:
-      const px_index = Contain("PX", arg); //expire in miliseconds
+      const key = getData(0)
+      const px_index = GetIndex("PX", arg); //expire in miliseconds
       const ex_index = GetIndex("EX", arg); //expire in seconds
       const include_nx = Contain("NX", arg); //create only if not exist
 
-      if (mem.has(getData(0)) && include_nx) {
+      if (mem.has(key) && include_nx) {
         //check if exist and create only if not exist is true
         client.socket.write(NULLBULKSTRING);
         break;
       }
-      mem.set(getData(0), new Mem([getData(1)], 0)); // set the value
+      mem.set(key, new Mem([getData(1)], 0)); // set the value
       
-      if (px_index) {
-        setTimeout(() => {
-          mem.delete(getData(0));
-        }, +getData(4));
+      if (px_index != -1) {
+        setTimeout(
+          () => {
+            mem.delete(key);
+          },
+          +getData(px_index + 1),
+        );
       }
 
       //set expiry in miliseconds
-      else if (ex_index !== -1) {
+      else if (ex_index != -1) {
         setTimeout(
           () => {
-            mem.delete(getData(0));
+            mem.delete(key);
           },
           +getData(ex_index + 1) * 1000,
         );
