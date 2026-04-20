@@ -34,6 +34,7 @@ export async function Manage(arg: string[], client: Client) {
   switch (input) {
     case "EXEC":
       command = Commands.Exec;
+      break;
     case "MULTI":
       command = Commands.Multi;
       break;

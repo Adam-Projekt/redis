@@ -42,6 +42,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
   switch (command) {
     case Commands.Exec:
       client.socket.write(exec(arg, client));
+      break;
     case Commands.Multi:
       client.socket.write(multi(arg, client));
       break;
