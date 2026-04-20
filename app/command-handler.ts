@@ -34,6 +34,14 @@ export async function Manage(arg: string[], client: Client) {
         return;
       }
       break;
+    case "LPUSH":
+      if (arg.length > 2) {
+        command = Commands.Lpush;
+      } else {
+        client.socket.write(BulkError("ERR Not enough arguments"));
+        return;
+      }
+      break;
     case "SET":
       if (arg.length > 2) {
         command = Commands.Set;

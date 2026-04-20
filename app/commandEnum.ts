@@ -3,6 +3,7 @@ export enum Commands {
   Get = "GET",
   Acl = "ACL",
   Rpush = "RPUSH",
+  Lpush = "LPUSH",
   Lrange = "LRAGE",
   Auth = "AUTH",
   Ping = "PING",

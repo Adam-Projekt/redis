@@ -92,6 +92,24 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       }
       client.socket.write(BulkString(data?.data[0] || undefined));
       break;
+    case Commands.Lpush:
+      const key4 = getData(0);
+
+      for (let i = 1; i < arg.length; i++) {
+        const value = arg[i];
+        if (mem.has(key4)) {
+          if (mem.get(key4)?.WhatData !== 1) {
+            client.socket.write(BulkError("WRONGTYPE"));
+            return;
+          }
+          mem.get(key4)?.data.unshift(value);
+        } else {
+          mem.set(key4, new Mem([value], 1));
+        }
+      }
+      console.log("finish");
+      client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
+      break; //lpush
     case Commands.Rpush:
       const key = getData(0);
 
@@ -126,9 +144,11 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       let stop: number = Number(getData(2));
 
       if (start < 0) {
+        //implement neginative index
         start += array.length;
       }
       if (stop < 0) {
+        //implement neginative index
         stop += array.length;
       }
       if (start >= array.length) {
