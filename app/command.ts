@@ -22,7 +22,10 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       return arg[index];
     } else return "";
   }
-
+  if (arg.length == 0) {
+    client.socket.write(BulkError("ERR no Parametrs"));
+    return;
+  }
   const subcommand = getData(0).toUpperCase();
   let index;
   let username: string;
@@ -169,6 +172,19 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         }
       }
       client.socket.write(BulkArray(response));
+
+      break;
+    case Commands.Llen:
+      const arr = mem.get(getData(0));
+      if (arr?.WhatData !== 1) {
+        client.socket.write(BulkError("WRONGTYPE"));
+        return;
+      }
+      if (arr == undefined) {
+        client.socket.write(BulkInteger(0));
+        return;
+      }
+      client.socket.write(BulkInteger(arr.data.length));
 
       break;
     case Commands.Acl:
