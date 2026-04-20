@@ -1,4 +1,4 @@
-import { BulkString, BulkError, NULLBULKSTRING } from "../helper";
+import { BulkString, BulkError, NULLBULKSTRING, BulkInteger } from "../helper";
 import { mem } from "../command-handler";
 import { getActiveMem } from "../class";
 
@@ -17,4 +17,5 @@ export function incr(arg: string[]) {
   let num = Number(key.data[0]);
   num++;
   key.data[0] = num.toString();
+  return BulkInteger(num);
 }
