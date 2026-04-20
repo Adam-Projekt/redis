@@ -16,6 +16,9 @@ export function incr(arg: string[]) {
   if (data.WhatData != 0) {
     return BulkError("WRONGTYPE");
   }
+  if (Number.isNaN(data.data[0])) {
+    return BulkError("ERR value is not an integer or out of range");
+  }
   let num = Number(data.data[0]);
   num++;
   data.data[0] = num.toString();
