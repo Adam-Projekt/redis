@@ -11,9 +11,7 @@ import {
 
 export async function acl(arg: string[], client: Client) {
   let username = arg[1];
-  if (arg.length == 0) {
-    return BulkError("ERR no Parametrs");
-  }
+  let user: User = users[0];
   let index;
   const subcommand = arg[0].toUpperCase();
   switch (subcommand) {
@@ -21,7 +19,6 @@ export async function acl(arg: string[], client: Client) {
       const data = client.user?.name || "default";
       return BulkString(data);
     case "GETUSER":
-      let user: User = users[0];
       index = users.findIndex((person) => person.name === username);
       if (index >= 0) {
         user = users[index];
