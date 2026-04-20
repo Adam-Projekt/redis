@@ -183,7 +183,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       const keys = arg.slice(0, arg.length - 1);
       const timeoutSeconds = Number(arg[arg.length - 1]);
 
-      if (!Number.isFinite(timeoutSeconds) || timeoutSeconds < 0) {
+      if (!Number.isInteger(timeoutSeconds) || timeoutSeconds < 0) {
         return BulkError("ERR timeout is not a float or out of range");
       }
 
