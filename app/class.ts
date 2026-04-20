@@ -1,3 +1,5 @@
+import * as net from "net";
+
 export class User {
   passwordArray: string[] = [];
   flagArray: string[] = [];
@@ -58,4 +60,19 @@ export function getActiveMem(store: Map<string, Mem>, key: string) {
   }
 
   return entry;
+}
+
+export class Client {
+  socket: net.Socket;
+  authenticated: boolean;
+  user: User | null;
+  blocked: boolean;
+
+  constructor(socket: net.Socket, defaultUser: User) {
+    this.socket = socket;
+    this.user = defaultUser;
+    this.blocked = false;
+
+    this.authenticated = defaultUser.flagArray.includes("nopass");
+  }
 }

@@ -10,8 +10,7 @@ import {
   GetIndex,
   NULLBULKSTRING,
 } from "./helper";
-import { Client } from "./client";
-import { User, Mem } from "./class";
+import { User, Mem, Client } from "./class";
 import { Commands } from "./commandEnum";
 import { handle } from "./command";
 

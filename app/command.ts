@@ -10,8 +10,7 @@ import {
   GetIndex,
   NULLBULKSTRING,
 } from "./helper";
-import { Client } from "./client";
-import { User, Mem, getActiveMem } from "./class";
+import { User, Mem, getActiveMem, Client } from "./class";
 import { mem, users } from "./command-handler";
 import { Commands } from "./commandEnum";
 import { get } from "./commands/get";
@@ -181,7 +180,9 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       const timeoutSeconds = Number(arg[arg.length - 1]);
 
       if (!Number.isFinite(timeoutSeconds) || timeoutSeconds < 0) {
-        client.socket.write(BulkError("ERR timeout is not a float or out of range"));
+        client.socket.write(
+          BulkError("ERR timeout is not a float or out of range"),
+        );
         return;
       }
 
