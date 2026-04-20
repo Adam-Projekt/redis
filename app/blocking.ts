@@ -1,5 +1,4 @@
-import { Client } from "./client";
-import { Mem, getActiveMem } from "./class";
+import { Mem, getActiveMem,Client } from "./class";
 import { BulkArray, BulkError, NULLBULKARRAY } from "./helper";
 
 type TryBlpopResult =

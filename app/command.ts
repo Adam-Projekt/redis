@@ -16,6 +16,7 @@ import { Commands } from "./commandEnum";
 import { get } from "./commands/get";
 import { set } from "./commands/set";
 import { blockClient, serveBlockedClients, tryBlpop } from "./blocking";
+import { type } from "./commands/type";
 
 export async function handle(arg: string[], command: Commands, client: Client) {
   //helper function
@@ -199,6 +200,9 @@ export async function handle(arg: string[], command: Commands, client: Client) {
 
       blockClient(client, keys, timeoutSeconds);
       return;
+    case Commands.Type:
+      client.socket.write(type(arg));
+      break;
     case Commands.Acl:
       username = getData(1);
       if (arg.length == 0) {

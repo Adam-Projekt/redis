@@ -1,8 +1,9 @@
 import { get } from "./commands/get";
 import { set } from "./commands/set";
+import { type } from "./commands/type";
 
 export enum Commands {
-  Set = "",
+  Set = "SET",
   Get = "GET",
   Rpush = "RPUSH", //List thing
   Lpush = "LPUSH",
@@ -10,6 +11,7 @@ export enum Commands {
   Lpop = "LPOP",
   Blpop = "BLPOP",
   Lrange = "LRAGE",
+  Type = "TYPE",
   Auth = "AUTH", //auth/manage thing
   Acl = "ACL",
   Ping = "PING",
@@ -29,4 +31,5 @@ export enum Commands {
 export const CommandTable = {
   Set: () => get,
   Get: () => set,
+  Type: () => type,
 };
