@@ -203,7 +203,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       let response2: string[] = [];
       if (arg.length > 1) {
         vari = Number(arg[1]);
-        for (let i = 0; i <= vari; i++) {
+        for (let i = 0; i < vari; i++) {
           response2.push(arra.data[i]);
         }
       }
