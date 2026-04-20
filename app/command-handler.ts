@@ -166,9 +166,9 @@ export async function Manage(arg: string[], client: Client) {
     return;
   }
 
-  if (client.isTransaction) {
+  if (client.isTransaction && command != Commands.Exec) {
     client.TransactionArray.push(new query(command, arg));
-    client.socket.write(SimpleString("QUEUED"))
+    client.socket.write(SimpleString("QUEUED"));
   } else {
     await handle(arg, command, client);
   }
