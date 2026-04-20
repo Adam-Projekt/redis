@@ -35,29 +35,23 @@ export async function handle(arg: string[], command: Commands, client: Client) {
   let user;
 
   if (!client.authenticated && !(command == Commands.Auth)) {
-    client.socket.write(BulkError("NOAUTH Authentication required."));
-    return;
+    return BulkError("NOAUTH Authentication required.");
   }
 
   switch (command) {
     case Commands.Exec:
-      client.socket.write(exec(arg, client));
-      break;
+      return exec(arg, client);
     case Commands.Multi:
-      client.socket.write(multi(arg, client));
-      break;
+      return multi(arg, client);
     case Commands.Incr:
-      client.socket.write(incr(arg));
-      break;
+      return incr(arg);
     case Commands.Watch:
-      client.socket.write(watch(arg));
-      break;
+      return watch(arg);
     case Commands.Set:
-      client.socket.write(set(arg));
-      break;
+      return set(arg);
     case Commands.Get:
-      client.socket.write(get(arg));
-      break;
+      return get(arg);
+
     case Commands.Lpush:
       const key4 = getData(0);
       let list4 = getActiveMem(mem, key4);
@@ -66,7 +60,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         const value = arg[i];
         if (list4) {
           if (list4.WhatData !== 1) {
-            client.socket.write(BulkError("WRONGTYPE"));
+            return BulkError("WRONGTYPE");
             return;
           }
           list4.data.unshift(value);
@@ -78,7 +72,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       const lpushLength = getActiveMem(mem, key4)?.data.length || 0;
       serveBlockedClients(mem, key4);
       console.log("finish");
-      client.socket.write(BulkInteger(lpushLength));
+      return BulkInteger(lpushLength);
       break; //lpush
     case Commands.Rpush:
       const key = getData(0);
@@ -88,8 +82,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         const value = arg[i];
         if (list) {
           if (list.WhatData !== 1) {
-            client.socket.write(BulkError("WRONGTYPE"));
-            return;
+            return BulkError("WRONGTYPE");
           }
           list.data.push(value);
         } else {
@@ -100,17 +93,14 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       const rpushLength = getActiveMem(mem, key)?.data.length || 0;
       serveBlockedClients(mem, key);
       console.log("finish");
-      client.socket.write(BulkInteger(rpushLength));
-      break; //Rpush
+      return BulkInteger(rpushLength); //Rpush
     case Commands.Lrange:
       const key3 = getActiveMem(mem, getData(0));
       if (key3 == undefined) {
-        client.socket.write(BulkArray([], false)); //empty bulk array
-        return;
+        return BulkArray([], false); //empty bulk array
       }
       if (key3?.WhatData !== 1) {
-        client.socket.write(BulkError("WRONGTYPE"));
-        return;
+        return BulkError("WRONGTYPE");
       }
       const array = key3.data;
 
@@ -126,12 +116,10 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         stop += array.length;
       }
       if (start >= array.length) {
-        client.socket.write(BulkArray([], false)); //empty bulk array
-        return;
+        return BulkArray([], false); //empty bulk array
       }
       if (start > stop) {
-        client.socket.write(BulkArray([], false)); //empty bulk array
-        return;
+        return BulkArray([], false); //empty bulk array
       }
       if (stop >= array.length) {
         stop = array.length - 1;
@@ -142,36 +130,35 @@ export async function handle(arg: string[], command: Commands, client: Client) {
           response.push(array[i]);
         }
       }
-      client.socket.write(BulkArray(response));
-
-      break;
+      return BulkArray(response);
     case Commands.Llen:
       const arr = getActiveMem(mem, getData(0));
       if (arr == undefined) {
-        client.socket.write(BulkInteger(0));
-        return;
+        return BulkInteger(0);
+        
+        
       }
       if (arr?.WhatData !== 1) {
-        client.socket.write(BulkError("WRONGTYPE"));
+        return BulkError("WRONGTYPE");
         return;
       }
 
-      client.socket.write(BulkInteger(arr.data.length));
+      return BulkInteger(arr.data.length);
 
       break;
     case Commands.Lpop:
       const arra = getActiveMem(mem, getData(0));
       if (arra == undefined) {
-        client.socket.write(NULLBULKSTRING);
+        return NULLBULKSTRING;
         return;
       }
       if (arra?.WhatData !== 1) {
-        client.socket.write(BulkError("WRONGTYPE"));
+        return BulkError("WRONGTYPE");
         return;
       }
 
       if (arra.data.length == 0) {
-        client.socket.write(NULLBULKSTRING);
+        return NULLBULKSTRING;
         return;
       }
       let vari = 1;
@@ -186,9 +173,9 @@ export async function handle(arg: string[], command: Commands, client: Client) {
 
       arra.data = arra.data.slice(vari);
       if (response2.length == 1) {
-        client.socket.write(BulkString(response2[0]));
+        return BulkString(response2[0]);
       } else {
-        client.socket.write(BulkArray(response2));
+        return BulkArray(response2);
       }
 
       break;
@@ -197,48 +184,40 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       const timeoutSeconds = Number(arg[arg.length - 1]);
 
       if (!Number.isFinite(timeoutSeconds) || timeoutSeconds < 0) {
-        client.socket.write(
-          BulkError("ERR timeout is not a float or out of range"),
-        );
-        return;
+        return BulkError("ERR timeout is not a float or out of range");
       }
 
       const blpopResult = tryBlpop(mem, keys);
       if (blpopResult.status === "wrongtype") {
-        client.socket.write(BulkError("WRONGTYPE"));
-        return;
+        return BulkError("WRONGTYPE");
       }
 
       if (blpopResult.status === "value") {
-        client.socket.write(BulkArray([blpopResult.key, blpopResult.value]));
-        return;
+        return BulkArray([blpopResult.key, blpopResult.value]);
       }
 
       blockClient(client, keys, timeoutSeconds);
       return;
     case Commands.Type:
-      client.socket.write(type(arg));
+      return type(arg);
       break;
     case Commands.Acl:
       username = getData(1);
       if (arg.length == 0) {
-        client.socket.write(BulkError("ERR no Parametrs"));
-        return;
+        return BulkError("ERR no Parametrs");
       }
       const subcommand = getData(0).toUpperCase();
       switch (subcommand) {
         case "WHOAMI":
           const data = client.user?.name || "default";
-          client.socket.write(BulkString(data));
-          break;
+          return BulkString(data);
         case "GETUSER":
           index = users.findIndex((person) => person.name === username);
           if (index >= 0) {
             user = users[index];
             console.log(user);
           } else {
-            client.socket.write(SimpleString("User not found"));
-            break;
+            return SimpleString("User not found");
           }
           const array = BulkArray(
             [
@@ -250,7 +229,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
             false,
           );
           console.log(array + "dadss");
-          client.socket.write(array);
+          return array;
           break;
         case "SETUSER":
           index = users.findIndex((person) => person.name === username);
@@ -258,7 +237,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
             user = users[index];
             console.log(user);
           } else {
-            client.socket.write(SimpleString("User not found"));
+            return SimpleString("User not found");
             break;
           }
           let Parametrs: string = getData(2);
@@ -272,13 +251,10 @@ export async function handle(arg: string[], command: Commands, client: Client) {
               user.flagArray.splice(len, 1);
             }
           }
-          client.socket.write(SimpleString("OK"));
-          break;
+          return SimpleString("OK");
         default:
-          client.socket.write(BulkString("Command not found"));
-          break;
-      }
-      break; //ACL
+          return BulkString("Command not found");
+      } //ACL
     case Commands.Auth:
       username = getData(0);
       user;
@@ -287,12 +263,9 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         user = users[index];
         console.log(user);
       } else {
-        client.socket.write(
-          BulkError(
-            "WRONGPASS invalid username-password pair or user is disabled.",
-          ),
-        ); //BulkError
-        break;
+        return BulkError(
+          "WRONGPASS invalid username-password pair or user is disabled.",
+        ) //BulkError
       }
       const InputPassword = await generateSHA256(getData(1));
       const PasswordArray = user.passwordArray;
@@ -301,20 +274,18 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       if (result !== -1 || user.flagArray.includes("nopass")) {
         client.authenticated = true;
         client.user = user;
-        client.socket.write(SimpleString("OK"));
+        return SimpleString("OK");
       } else {
-        client.socket.write(
-          BulkError(
+        return BulkError(
             "WRONGPASS invalid username-password pair or user is disabled.",
-          ),
-        ); // BulkError
+          ); // BulkError
       }
       break; //AUTH
     case Commands.Echo:
-      client.socket.write(BulkString(getData(0)));
+      return BulkString(getData(0));
       break; //Echo
     case Commands.Ping:
-      client.socket.write(SimpleString("PONG"));
+      return SimpleString("PONG");
       break; //PING //PING
     default:
       break;
