@@ -172,7 +172,7 @@ export async function handle(
       return type(arg);
       break;
     case Commands.Acl:
-      return acl(arg, client);
+      return await acl(arg, client);
     case Commands.Auth:
       username = getData(0);
       user;

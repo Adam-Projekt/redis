@@ -2,7 +2,7 @@ import { Client } from "../../class";
 import { users } from "../../command-handler";
 import { BulkArray, BulkError, BulkString, SimpleString } from "../../helper";
 
-export function acl(arg: string[], client: Client) {
+export async function acl(arg: string[], client: Client) {
   let username = arg[1];
   if (arg.length == 0) {
     return BulkError("ERR no Parametrs");
