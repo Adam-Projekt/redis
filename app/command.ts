@@ -108,7 +108,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         }
       }
       console.log("finish");
-      client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
+      client.socket.write(BulkInteger(mem.get(key4)?.data.length || 0));
       break; //lpush
     case Commands.Rpush:
       const key = getData(0);
