@@ -1,6 +1,13 @@
-import { Client } from "../../class";
+import { Client, User } from "../../class";
 import { users } from "../../command-handler";
-import { BulkArray, BulkError, BulkString, SimpleString } from "../../helper";
+import {
+  BulkArray,
+  BulkError,
+  BulkString,
+  generateSHA256,
+  GetIndex,
+  SimpleString,
+} from "../../helper";
 
 export async function acl(arg: string[], client: Client) {
   let username = arg[1];
@@ -14,7 +21,7 @@ export async function acl(arg: string[], client: Client) {
       const data = client.user?.name || "default";
       return BulkString(data);
     case "GETUSER":
-      let user;
+      let user: User = users[0];
       index = users.findIndex((person) => person.name === username);
       if (index >= 0) {
         user = users[index];
@@ -31,9 +38,7 @@ export async function acl(arg: string[], client: Client) {
         ],
         false,
       );
-      console.log(array + "dadss");
       return array;
-      break;
     case "SETUSER":
       index = users.findIndex((person) => person.name === username);
       if (index >= 0) {
@@ -43,7 +48,7 @@ export async function acl(arg: string[], client: Client) {
         return SimpleString("User not found");
         break;
       }
-      let Parametrs: string = getData(2);
+      let Parametrs: string = arg[2];
       if (Parametrs.startsWith(">")) {
         let password = Parametrs.slice(1);
         password = await generateSHA256(password);

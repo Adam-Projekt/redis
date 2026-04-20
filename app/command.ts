@@ -32,7 +32,7 @@ export async function handle(
   arg: string[],
   command: Commands,
   client: Client,
-): string {
+): Promise<string> {
   //helper function
   function getData(index: number) {
     if (index < arg.length) {
