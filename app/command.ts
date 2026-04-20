@@ -22,7 +22,11 @@ import { incr } from "./commands/incr";
 import { multi } from "./commands/multi";
 import { exec } from "./commands/exec";
 
-export async function handle(arg: string[], command: Commands, client: Client) {
+export async function handle(
+  arg: string[],
+  command: Commands,
+  client: Client,
+): string {
   //helper function
   function getData(index: number) {
     if (index < arg.length) {
@@ -157,7 +161,6 @@ export async function handle(arg: string[], command: Commands, client: Client) {
 
       if (arra.data.length == 0) {
         return NULLBULKSTRING;
-        return;
       }
       let vari = 1;
       let response2: string[] = [];
@@ -286,6 +289,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       return SimpleString("PONG");
       break; //PING //PING
     default:
+      return "";
       break;
   }
 }
