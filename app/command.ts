@@ -125,6 +125,12 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       let start: number = Number(getData(1));
       let stop: number = Number(getData(2));
 
+      if (start < 0) {
+        start += array.length;
+      }
+      if (stop < 0) {
+        stop += array.length;
+      }
       if (start >= array.length) {
         client.socket.write(BulkArray([], false)); //empty bulk array
         return;
