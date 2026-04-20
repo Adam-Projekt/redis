@@ -10,7 +10,7 @@ export function exec(arg: string[], client: Client) {
   }
   if (client.TransactionArray.length == 0) {
     client.isTransaction = false;
-    return BulkArray(client.TransactionArray, false);
+    return BulkArray([], false);
   }
 
   return SimpleString("ok");

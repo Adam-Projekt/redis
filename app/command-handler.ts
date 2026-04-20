@@ -10,7 +10,7 @@ import {
   GetIndex,
   NULLBULKSTRING,
 } from "./helper";
-import { User, Mem, Client } from "./class";
+import { User, Mem, Client, query } from "./class";
 import { Commands } from "./commandEnum";
 import { handle } from "./command";
 
@@ -159,13 +159,17 @@ export async function Manage(arg: string[], client: Client) {
     default:
       break;
   }
-
   arg = arg.slice(1); //removes first element and shift
-
   console.log(command);
   if (command == Commands.Not) {
     client.socket.write(SimpleString("PONG")); //command unknown
     return;
   }
-  await handle(arg, command, client);
+
+  if (client.isTransaction) {
+    client.TransactionArray.push(new query(command, arg));
+    client.socket.write(SimpleString("QUEUED"))
+  } else {
+    await handle(arg, command, client);
+  }
 }

@@ -1,4 +1,5 @@
 import * as net from "net";
+import { Commands } from "./commandEnum";
 
 export class User {
   passwordArray: string[] = [];
@@ -68,7 +69,7 @@ export class Client {
   user: User | null;
   blocked: boolean;
   isTransaction: boolean;
-  TransactionArray: string[];
+  TransactionArray: query[];
 
   constructor(socket: net.Socket, defaultUser: User) {
     this.socket = socket;
@@ -78,5 +79,14 @@ export class Client {
     this.TransactionArray = [];
 
     this.authenticated = defaultUser.flagArray.includes("nopass");
+  }
+}
+export class query {
+  command: Commands;
+  arg: string[];
+
+  constructor(command: Commands, arg: string[]) {
+    this.command = command;
+    this.arg = arg;
   }
 }
