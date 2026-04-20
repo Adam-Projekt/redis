@@ -1,13 +1,7 @@
 //my things
 import {
-  BulkString,
   SimpleString,
-  BulkArray,
-  generateSHA256,
   BulkError,
-  BulkInteger,
-  Contain,
-  GetIndex,
   NULLBULKSTRING,
 } from "./helper";
 import { User, Mem, Client, query } from "./class";
@@ -31,7 +25,11 @@ export async function Manage(arg: string[], client: Client) {
 
   const input: string = arg[0].toLocaleUpperCase();
   let command: Commands = Commands.Not;
+
   switch (input) {
+    case "DISCARD":
+      command = Commands.Discard;
+      break;
     case "EXEC":
       command = Commands.Exec;
       break;
