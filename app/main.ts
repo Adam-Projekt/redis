@@ -5,7 +5,9 @@ import { users } from "./command-handler";
 import { cleanupBlockedClient } from "./blocking";
 import { argv } from "bun";
 console.log(argv);
-const port = Number(argv[3]) || 6379;
+
+const dir = argv[3] || "";
+const dbfilename = argv[]
 
 console.log("Logs from your program will appear here!");
 
@@ -29,4 +31,4 @@ const server = net.createServer((connection) => {
   });
 });
 
-server.listen(port, "127.0.0.1");
+server.listen(6379, "127.0.0.1");
