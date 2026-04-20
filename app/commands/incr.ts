@@ -1,6 +1,7 @@
 import { BulkString, BulkError, NULLBULKSTRING, BulkInteger } from "../helper";
 import { mem } from "../command-handler";
 import { getActiveMem, Mem } from "../class";
+import { markKeyModified } from "../keyspace";
 
 export function incr(arg: string[]) {
   if (arg.length != 1) {
@@ -11,6 +12,7 @@ export function incr(arg: string[]) {
   if (data == undefined) {
     //key doesnt exist
     mem.set(key, new Mem(["1"], 0));
+    markKeyModified(key);
     return BulkInteger(1);
   }
   if (data.WhatData != 0) {
@@ -23,5 +25,6 @@ export function incr(arg: string[]) {
   }
   num++;
   data.data[0] = num.toString();
+  markKeyModified(key);
   return BulkInteger(num);
 }

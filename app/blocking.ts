@@ -1,5 +1,6 @@
 import { Mem, getActiveMem,Client } from "./class";
 import { BulkArray, BulkError, NULLBULKARRAY } from "./helper";
+import { markKeyModified } from "./keyspace";
 
 type TryBlpopResult =
   | { status: "empty" }
@@ -32,6 +33,7 @@ export function tryBlpop(
     if (entry.data.length > 0) {
       const value = entry.data.shift();
       if (value !== undefined) {
+        markKeyModified(key);
         return { status: "value", key, value };
       }
     }

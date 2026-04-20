@@ -1,6 +1,6 @@
 import { Client } from "../class";
 import { handle } from "../command";
-import { BulkArray, BulkError, SimpleString } from "../helper";
+import { BulkArray, BulkError, NULLBULKARRAY } from "../helper";
 
 export async function exec(arg: string[], client: Client) {
   if (arg.length != 0) {
@@ -9,22 +9,32 @@ export async function exec(arg: string[], client: Client) {
   if (!client.isTransaction) {
     return BulkError("ERR EXEC without MULTI");
   }
-  if (client.TransactionArray.length == 0) {
-    client.isTransaction = false;
+  client.isTransaction = false;
+  if (client.hasDirtyWatchedKeys()) {
+    client.TransactionArray = [];
+    client.clearWatch();
+    return NULLBULKARRAY;
+  }
+
+  const queue = client.TransactionArray;
+  client.TransactionArray = [];
+
+  if (queue.length == 0) {
+    client.clearWatch();
     return BulkArray([], false);
   }
-  client.isTransaction = false;
+
   let response: string[] = [];
-  for (let i = 0; i < client.TransactionArray.length; i++) {
+  for (let i = 0; i < queue.length; i++) {
     response.push(
       await handle(
-        client.TransactionArray[i].arg,
-        client.TransactionArray[i].command,
+        queue[i].arg,
+        queue[i].command,
         client,
       ) || "",
     );
   }
-  client.TransactionArray = [];
+  client.clearWatch();
 
   return BulkArray(response, false);
 }

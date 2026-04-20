@@ -10,5 +10,6 @@ export function discard(arg: string[], client: Client): string {
   }
   client.isTransaction = false;
   client.TransactionArray = [];
+  client.clearWatch();
   return SimpleString("OK");
 }

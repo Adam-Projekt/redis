@@ -1,5 +1,6 @@
 import * as net from "net";
 import { Commands } from "./commandEnum";
+import { getKeyVersion, markKeyModified } from "./keyspace";
 
 export class User {
   passwordArray: string[] = [];
@@ -43,6 +44,7 @@ export class Mem {
       const current = store.get(key);
       if (current === this && current.expiryAt === expectedExpiryAt) {
         store.delete(key);
+        markKeyModified(key);
       }
     }, ttlMs);
   }
@@ -57,6 +59,7 @@ export function getActiveMem(store: Map<string, Mem>, key: string) {
   if (entry.isExpired()) {
     entry.clearExpiry();
     store.delete(key);
+    markKeyModified(key);
     return undefined;
   }
 
@@ -70,6 +73,7 @@ export class Client {
   blocked: boolean;
   isTransaction: boolean;
   TransactionArray: query[];
+  watchedKeyVersions: Map<string, number>;
 
   constructor(socket: net.Socket, defaultUser: User) {
     this.socket = socket;
@@ -77,8 +81,29 @@ export class Client {
     this.blocked = false;
     this.isTransaction = false;
     this.TransactionArray = [];
+    this.watchedKeyVersions = new Map();
 
     this.authenticated = defaultUser.flagArray.includes("nopass");
+  }
+
+  watchKeys(keys: string[]) {
+    for (const key of keys) {
+      this.watchedKeyVersions.set(key, getKeyVersion(key));
+    }
+  }
+
+  clearWatch() {
+    this.watchedKeyVersions.clear();
+  }
+
+  hasDirtyWatchedKeys() {
+    for (const [key, version] of this.watchedKeyVersions) {
+      if (getKeyVersion(key) !== version) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
 export class query {

@@ -169,6 +169,7 @@ export async function Manage(arg: string[], client: Client) {
       if (client.TransactionArray.length >= 5) {
         client.TransactionArray = [];
         client.isTransaction = false;
+        client.clearWatch();
       }
     }
   } else {

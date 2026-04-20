@@ -22,6 +22,7 @@ import { incr } from "./commands/incr";
 import { multi } from "./commands/multi";
 import { exec } from "./commands/exec";
 import { discard } from "./commands/discard";
+import { markKeyModified } from "./keyspace";
 
 export async function handle(
   arg: string[],
@@ -51,7 +52,7 @@ export async function handle(
     case Commands.Incr:
       return incr(arg);
     case Commands.Watch:
-      return watch(arg);
+      return watch(arg, client);
     case Commands.Set:
       return set(arg);
     case Commands.Get:
@@ -75,6 +76,7 @@ export async function handle(
         }
       }
       const lpushLength = getActiveMem(mem, key4)?.data.length || 0;
+      markKeyModified(key4);
       serveBlockedClients(mem, key4);
       console.log("finish");
       return BulkInteger(lpushLength);
@@ -96,6 +98,7 @@ export async function handle(
         }
       }
       const rpushLength = getActiveMem(mem, key)?.data.length || 0;
+      markKeyModified(key);
       serveBlockedClients(mem, key);
       console.log("finish");
       return BulkInteger(rpushLength); //Rpush
@@ -171,6 +174,7 @@ export async function handle(
       response2[0] = arra.data[0];
 
       arra.data = arra.data.slice(vari);
+      markKeyModified(getData(0));
       if (response2.length == 1) {
         return BulkString(response2[0]);
       } else {

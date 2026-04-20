@@ -1,6 +1,7 @@
 import { BulkError, NULLBULKSTRING, SimpleString } from "../helper";
 import { mem } from "../command-handler";
 import { getActiveMem, Mem } from "../class";
+import { markKeyModified } from "../keyspace";
 
 export function set(arg: string[]) {
   if (arg.length < 2) {
@@ -48,6 +49,7 @@ export function set(arg: string[]) {
   }
 
   mem.set(key, entry); // set the value
+  markKeyModified(key);
 
   return SimpleString("OK");
 }

@@ -1,9 +1,11 @@
-import { mem } from "../command-handler";
-import { getActiveMem } from "../class";
 import { BulkError, SimpleString } from "../helper";
-export function watch(arg: string[]) {
-  if (arg.length != 1) {
-    return BulkError("ERR must use 1 parameters");
+import type { Client } from "../class";
+
+export function watch(arg: string[], client: Client) {
+  if (arg.length < 1) {
+    return BulkError("ERR must use at least 1 parameter");
   }
+
+  client.watchKeys(arg);
   return SimpleString("OK");
 }
