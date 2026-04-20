@@ -176,14 +176,15 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       break;
     case Commands.Llen:
       const arr = mem.get(getData(0));
-      if (arr?.WhatData !== 1) {
-        client.socket.write(BulkError("WRONGTYPE"));
-        return;
-      }
       if (arr == undefined) {
         client.socket.write(BulkInteger(0));
         return;
       }
+      if (arr?.WhatData !== 1) {
+        client.socket.write(BulkError("WRONGTYPE"));
+        return;
+      }
+      
       client.socket.write(BulkInteger(arr.data.length));
 
       break;
