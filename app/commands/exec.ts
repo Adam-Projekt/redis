@@ -9,7 +9,8 @@ export function exec(arg: string[], client: Client) {
     return BulkError("ERR EXEC without MULTI");
   }
   if (client.TransactionArray.length == 0) {
-    return BulkArray(client.TransactionArray);
+    client.isTransaction = false;
+    return BulkArray(client.TransactionArray, false);
   }
 
   return SimpleString("ok");
