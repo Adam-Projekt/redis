@@ -194,17 +194,24 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         client.socket.write(BulkError("WRONGTYPE"));
         return;
       }
-      
+
       if (arra.data.length == 0) {
         client.socket.write(NULLBULKSTRING);
         return;
       }
-      const first = arra.data[0];
-      arra.data = arra.data.slice(1);
 
-      client.socket.write(BulkString(first));
+      let response2: string[] = [];
 
-      break;
+      for (let i = 1; i < arg.length; i++) {
+        response2.push(arg[i]);
+      }
+      arra.data = arra.data.slice(response2.length);
+      if (response2.length == 1) {
+        client.socket.write(BulkString(response2[0]));
+      } else {
+        client.socket.write(BulkArray(response2));
+      }
+
       break;
     case Commands.Acl:
       username = getData(1);
