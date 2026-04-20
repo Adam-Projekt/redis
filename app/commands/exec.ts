@@ -1,5 +1,5 @@
 import { Client } from "../class";
-import { BulkError, SimpleString } from "../helper";
+import { BulkArray, BulkError, SimpleString } from "../helper";
 
 export function exec(arg: string[], client: Client) {
   if (arg.length != 0) {
@@ -7,6 +7,9 @@ export function exec(arg: string[], client: Client) {
   }
   if (!client.isTransaction) {
     return BulkError("ERR EXEC without MULTI");
+  }
+  if (client.TransactionArray.length == 0) {
+    return BulkArray(client.TransactionArray);
   }
 
   return SimpleString("ok");
