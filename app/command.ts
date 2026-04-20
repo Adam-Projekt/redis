@@ -199,15 +199,13 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         client.socket.write(NULLBULKSTRING);
         return;
       }
-
+      let vari = 1;
       let response2: string[] = [];
       if (arg.length > 1) {
-        for (let i = 1; i < Number(arg[1]); i++) {
-          response2.push(arra.data[i]);
-        }
+        vari = Number(arg[1])
       }
 
-      arra.data = arra.data.slice(response2.length);
+      arra.data = arra.data.slice(vari);
       if (response2.length == 1) {
         client.socket.write(BulkString(response2[0]));
       } else {
