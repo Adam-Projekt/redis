@@ -1,9 +1,5 @@
 //my things
-import {
-  SimpleString,
-  BulkError,
-  NULLBULKSTRING,
-} from "./helper";
+import { SimpleString, BulkError, NULLBULKSTRING } from "./helper";
 import { User, Mem, Client, query } from "./class";
 import { Commands } from "./commandEnum";
 import { handle } from "./command";
@@ -19,7 +15,7 @@ export async function Manage(arg: string[], client: Client) {
   }
 
   if (client.blocked) {
-    client.socket.write(BulkError("ERR client is blocked"));
+    client.socket.write(await BulkError("ERR client is blocked"));
     return;
   }
 
