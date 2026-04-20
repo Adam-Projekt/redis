@@ -211,7 +211,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       }
 
       arra.data = arra.data.slice(vari);
-      if (response2.length != 1) {
+      if (response2.length == 1) {
         client.socket.write(BulkString(response2[0]));
       } else {
         client.socket.write(BulkArray(response2));
