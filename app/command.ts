@@ -21,6 +21,7 @@ import { watch } from "./commands/watch";
 import { incr } from "./commands/incr";
 import { multi } from "./commands/multi";
 import { exec } from "./commands/exec";
+import { discard } from "./commands/discard";
 
 export async function handle(
   arg: string[],
@@ -142,7 +143,6 @@ export async function handle(
       }
       if (arr?.WhatData !== 1) {
         return BulkError("WRONGTYPE");
-        return;
       }
 
       return BulkInteger(arr.data.length);
@@ -152,11 +152,9 @@ export async function handle(
       const arra = getActiveMem(mem, getData(0));
       if (arra == undefined) {
         return NULLBULKSTRING;
-        return;
       }
       if (arra?.WhatData !== 1) {
         return BulkError("WRONGTYPE");
-        return;
       }
 
       if (arra.data.length == 0) {
@@ -199,6 +197,8 @@ export async function handle(
 
       blockClient(client, keys, timeoutSeconds);
       return "";
+    case Commands.Discard:
+      return discard(arg, client);
     case Commands.Type:
       return type(arg);
       break;
