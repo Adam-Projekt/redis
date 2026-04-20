@@ -8,6 +8,7 @@ import { watch } from "./commands/transactions/watch";
 export enum Commands {
   Set = "SET",
   Get = "GET",
+  Config = "CONFIG",
   Incr = "INCR",
   Multi = "MULTI",
   Exec = "EXEC",

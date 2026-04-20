@@ -6,8 +6,8 @@ import { cleanupBlockedClient } from "./blocking";
 import { argv } from "bun";
 console.log(argv);
 
-const dir = argv[3] || "";
-const dbfilename = argv[5];
+export const dir = argv[3] || "";
+export const dbfilename = argv[5];
 
 console.log("Logs from your program will appear here!");
 

@@ -150,6 +150,14 @@ export async function Manage(arg: string[], client: Client) {
         return;
       }
       break;
+    case "CONFIG":
+      if (arg.length > 2) {
+        command = Commands.Config;
+      } else {
+        client.socket.write(BulkError("ERR Not enough arguments"));
+        return;
+      }
+      break;
     case "PING":
       command = Commands.Ping;
       break;

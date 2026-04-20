@@ -168,6 +168,8 @@ export async function handle(
       return "";
     case Commands.Discard:
       return discard(arg, client);
+    case Commands.Config:
+      
     case Commands.Type:
       return type(arg);
       break;
