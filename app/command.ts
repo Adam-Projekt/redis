@@ -135,8 +135,6 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       const arr = getActiveMem(mem, getData(0));
       if (arr == undefined) {
         return BulkInteger(0);
-        
-        
       }
       if (arr?.WhatData !== 1) {
         return BulkError("WRONGTYPE");
@@ -183,7 +181,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       const keys = arg.slice(0, arg.length - 1);
       const timeoutSeconds = Number(arg[arg.length - 1]);
 
-      if (!Number.isInteger(timeoutSeconds) || timeoutSeconds < 0) {
+      if (!Number.isFinite(timeoutSeconds) || timeoutSeconds < 0) {
         return BulkError("ERR timeout is not a float or out of range");
       }
 
@@ -265,7 +263,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       } else {
         return BulkError(
           "WRONGPASS invalid username-password pair or user is disabled.",
-        ) //BulkError
+        ); //BulkError
       }
       const InputPassword = await generateSHA256(getData(1));
       const PasswordArray = user.passwordArray;
@@ -277,8 +275,8 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         return SimpleString("OK");
       } else {
         return BulkError(
-            "WRONGPASS invalid username-password pair or user is disabled.",
-          ); // BulkError
+          "WRONGPASS invalid username-password pair or user is disabled.",
+        ); // BulkError
       }
       break; //AUTH
     case Commands.Echo:
