@@ -5,6 +5,7 @@ import { type } from "./commands/type";
 export enum Commands {
   Set = "SET",
   Get = "GET",
+  Watch = "WATCH",
   Rpush = "RPUSH", //List thing
   Lpush = "LPUSH",
   Llen = "Llen",
