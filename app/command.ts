@@ -20,6 +20,7 @@ import { type } from "./commands/type";
 import { watch } from "./commands/watch";
 import { incr } from "./commands/incr";
 import { multi } from "./commands/multi";
+import { exec } from "./commands/exec";
 
 export async function handle(arg: string[], command: Commands, client: Client) {
   //helper function
@@ -39,6 +40,8 @@ export async function handle(arg: string[], command: Commands, client: Client) {
   }
 
   switch (command) {
+    case Commands.Exec:
+      client.socket.write(exec(arg, client));
     case Commands.Multi:
       client.socket.write(multi(arg, client));
       break;

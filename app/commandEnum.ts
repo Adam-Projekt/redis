@@ -10,6 +10,7 @@ export enum Commands {
   Get = "GET",
   Incr = "INCR",
   Multi = "MULTI",
+  Exec = "EXEC",
   Watch = "WATCH",
   Rpush = "RPUSH", //List thing
   Lpush = "LPUSH",

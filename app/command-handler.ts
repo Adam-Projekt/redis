@@ -32,6 +32,8 @@ export async function Manage(arg: string[], client: Client) {
   const input: string = arg[0].toLocaleUpperCase();
   let command: Commands = Commands.Not;
   switch (input) {
+    case "EXEC":
+      command = Commands.Exec;
     case "MULTI":
       command = Commands.Multi;
       break;
