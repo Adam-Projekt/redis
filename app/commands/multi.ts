@@ -8,5 +8,5 @@ export function multi(arg: string[], client: Client) {
   }
   client.isTransaction = true;
 
-  return BulkString(SimpleString("OK"));
+  return SimpleString("OK");
 }
