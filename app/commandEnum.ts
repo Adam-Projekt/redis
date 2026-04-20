@@ -1,12 +1,13 @@
 export enum Commands {
   Set = "SET",
   Get = "GET",
-  Acl = "ACL",
-  Rpush = "RPUSH",
+  Rpush = "RPUSH", //List thing
   Lpush = "LPUSH",
   Llen = "Llen",
+  Lpop = "LPOP",
   Lrange = "LRAGE",
-  Auth = "AUTH",
+  Auth = "AUTH",//auth/manage thing
+  Acl = "ACL",
   Ping = "PING",
   Echo = "ECHO",
   Not = "NOT",

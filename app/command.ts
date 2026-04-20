@@ -184,6 +184,28 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       client.socket.write(BulkInteger(arr.data.length));
 
       break;
+    case Commands.Lpop:
+      const arra = mem.get(getData(0));
+      if (arra == undefined) {
+        client.socket.write(NULLBULKSTRING);
+        return;
+      }
+      if (arra?.WhatData !== 1) {
+        client.socket.write(BulkError("WRONGTYPE"));
+        return;
+      }
+      
+      if (arra.data.length == 0) {
+        client.socket.write(NULLBULKSTRING);
+        return;
+      }
+      const first = arra.data[0];
+      arra.data = arra.data.slice(1);
+
+      client.socket.write(BulkString(first));
+
+      break;
+      break;
     case Commands.Acl:
       username = getData(1);
       if (arg.length == 0) {

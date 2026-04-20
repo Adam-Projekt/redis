@@ -34,6 +34,14 @@ export async function Manage(arg: string[], client: Client) {
         return;
       }
       break;
+    case "LPOP":
+      if (arg.length > 1) {
+        command = Commands.Lpop;
+      } else {
+        client.socket.write(BulkError("ERR Not enough arguments"));
+        return;
+      }
+      break;
     case "LRANGE":
       if (arg.length > 2) {
         command = Commands.Lrange;
