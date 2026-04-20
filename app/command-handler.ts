@@ -33,12 +33,13 @@ export async function Manage(arg: string[], client: Client) {
   let command: Commands = Commands.Not;
   switch (input) {
     case "MULTI":
-      if (arg.length != 0) {
+      if (arg.length != 1) {
         command = Commands.Multi;
       } else {
         client.socket.write(BulkError("ERR Not enough arguments"));
         return;
       }
+      break;
     case "INCR":
       if (arg.length > 1) {
         command = Commands.Incr;
