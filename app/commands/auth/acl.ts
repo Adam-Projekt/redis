@@ -7,6 +7,7 @@ export async function acl(arg: string[], client: Client) {
   if (arg.length == 0) {
     return BulkError("ERR no Parametrs");
   }
+  let index;
   const subcommand = arg[0].toUpperCase();
   switch (subcommand) {
     case "WHOAMI":
@@ -14,7 +15,7 @@ export async function acl(arg: string[], client: Client) {
       return BulkString(data);
     case "GETUSER":
       let user;
-      const index = users.findIndex((person) => person.name === username);
+      index = users.findIndex((person) => person.name === username);
       if (index >= 0) {
         user = users[index];
         console.log(user);
