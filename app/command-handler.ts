@@ -15,7 +15,7 @@ export async function Manage(arg: string[], client: Client) {
   }
 
   if (client.blocked) {
-    client.socket.write(await BulkError("ERR client is blocked"));
+    client.socket.write(BulkError("ERR client is blocked"));
     return;
   }
 
@@ -164,6 +164,6 @@ export async function Manage(arg: string[], client: Client) {
     client.TransactionArray.push(new query(command, arg));
     client.socket.write(SimpleString("QUEUED"));
   } else {
-    client.socket.write(handle(arg, command, client));
+    client.socket.write(await handle(arg, command, client));
   }
 }
