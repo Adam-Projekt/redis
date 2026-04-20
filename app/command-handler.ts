@@ -160,7 +160,10 @@ export async function Manage(arg: string[], client: Client) {
     return;
   }
 
-  if (client.isTransaction && command != Commands.Exec) {
+  if (
+    client.isTransaction &&
+    (command != Commands.Exec || command != Commands.Discard)
+  ) {
     client.TransactionArray.push(new query(command, arg));
     client.socket.write(SimpleString("QUEUED"));
   } else {
