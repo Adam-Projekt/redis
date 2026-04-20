@@ -19,6 +19,7 @@ import { blockClient, serveBlockedClients, tryBlpop } from "./blocking";
 import { type } from "./commands/type";
 import { watch } from "./commands/watch";
 import { incr } from "./commands/incr";
+import { multi } from "./commands/multi";
 
 export async function handle(arg: string[], command: Commands, client: Client) {
   //helper function
@@ -38,6 +39,9 @@ export async function handle(arg: string[], command: Commands, client: Client) {
   }
 
   switch (command) {
+    case Commands.Multi:
+      multi(arg, client);
+      break;
     case Commands.Incr:
       client.socket.write(incr(arg));
       break;

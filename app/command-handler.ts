@@ -32,6 +32,13 @@ export async function Manage(arg: string[], client: Client) {
   const input: string = arg[0].toLocaleUpperCase();
   let command: Commands = Commands.Not;
   switch (input) {
+    case "MULTI":
+      if (arg.length != 0) {
+        command = Commands.Multi;
+      } else {
+        client.socket.write(BulkError("ERR Not enough arguments"));
+        return;
+      }
     case "INCR":
       if (arg.length > 1) {
         command = Commands.Incr;

@@ -1,4 +1,6 @@
 import { get } from "./commands/get";
+import { incr } from "./commands/incr";
+import { multi } from "./commands/multi";
 import { set } from "./commands/set";
 import { type } from "./commands/type";
 import { watch } from "./commands/watch";
@@ -7,6 +9,7 @@ export enum Commands {
   Set = "SET",
   Get = "GET",
   Incr = "INCR",
+  Multi = "MULTI",
   Watch = "WATCH",
   Rpush = "RPUSH", //List thing
   Lpush = "LPUSH",
@@ -36,5 +39,6 @@ export const CommandTable = {
   Get: () => set,
   Type: () => type,
   Watch: () => watch,
-  Incr: () => Incr
+  Incr: () => incr,
+  Multi: () => multi,
 };
