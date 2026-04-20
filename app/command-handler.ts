@@ -166,6 +166,10 @@ export async function Manage(arg: string[], client: Client) {
     } else {
       client.TransactionArray.push(new query(command, arg));
       client.socket.write(SimpleString("QUEUED"));
+      if (client.TransactionArray.length >= 5) {
+        client.TransactionArray = [];
+        client.isTransaction = false;
+      }
     }
   } else {
     client.socket.write(await handle(arg, command, client));

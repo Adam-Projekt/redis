@@ -17,13 +17,14 @@ export async function exec(arg: string[], client: Client) {
   let response: string[] = [];
   for (let i = 0; i < client.TransactionArray.length; i++) {
     response.push(
-      (await handle(
+      handle(
         client.TransactionArray[i].arg,
         client.TransactionArray[i].command,
         client,
-      )) || "",
+      ) || "",
     );
   }
+  client.TransactionArray = [];
 
   return BulkArray(response, false);
 }
