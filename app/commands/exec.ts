@@ -17,7 +17,7 @@ export async function exec(arg: string[], client: Client) {
   let response: string[] = [];
   for (let i = 0; i < client.TransactionArray.length; i++) {
     response.push(
-      handle(
+      await handle(
         client.TransactionArray[i].arg,
         client.TransactionArray[i].command,
         client,
