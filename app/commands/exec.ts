@@ -2,7 +2,7 @@ import { Client } from "../class";
 import { handle } from "../command";
 import { BulkArray, BulkError, SimpleString } from "../helper";
 
-export function exec(arg: string[], client: Client) {
+export async function exec(arg: string[], client: Client) {
   if (arg.length != 0) {
     return BulkError("ERR must use 0 parameters");
   }
@@ -16,10 +16,12 @@ export function exec(arg: string[], client: Client) {
   client.isTransaction = false;
   let response: string[] = [];
   for (let i = 0; i < client.TransactionArray.length; i++) {
-    handle(
-      client.TransactionArray[i].arg,
-      client.TransactionArray[i].command,
-      client,
+    response.push(
+      (await handle(
+        client.TransactionArray[i].arg,
+        client.TransactionArray[i].command,
+        client,
+      )) || "",
     );
   }
 
