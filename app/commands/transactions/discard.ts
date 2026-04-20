@@ -1,5 +1,5 @@
-import type { Client } from "../class";
-import { BulkError, SimpleString } from "../helper";
+import type { Client } from "../../class";
+import { BulkError, SimpleString } from "../../helper";
 
 export function discard(arg: string[], client: Client): string {
   if (arg.length != 0) {

@@ -24,6 +24,9 @@ import { exec } from "./commands/transactions/exec";
 import { discard } from "./commands/transactions/discard";
 import { unwatch } from "./commands/transactions/unwatch";
 import { markKeyModified } from "./keyspace";
+import { lpush } from "./commands/lists/lpush";
+import { rpush } from "./commands/lists/rpush";
+import { acl } from "./commands/auth/acl";
 
 export async function handle(
   arg: string[],
@@ -61,28 +64,9 @@ export async function handle(
     case Commands.Get:
       return get(arg);
     case Commands.Lpush:
-      
+      return lpush(arg);
     case Commands.Rpush:
-      const key = getData(0);
-      let list = getActiveMem(mem, key);
-
-      for (let i = 1; i < arg.length; i++) {
-        const value = arg[i];
-        if (list) {
-          if (list.WhatData !== 1) {
-            return BulkError("WRONGTYPE");
-          }
-          list.data.push(value);
-        } else {
-          list = new Mem([value], 1);
-          mem.set(key, list);
-        }
-      }
-      const rpushLength = getActiveMem(mem, key)?.data.length || 0;
-      markKeyModified(key);
-      serveBlockedClients(mem, key);
-      console.log("finish");
-      return BulkInteger(rpushLength); //Rpush
+      return rpush(arg);
     case Commands.Lrange:
       const key3 = getActiveMem(mem, getData(0));
       if (key3 == undefined) {
@@ -188,59 +172,7 @@ export async function handle(
       return type(arg);
       break;
     case Commands.Acl:
-      username = getData(1);
-      if (arg.length == 0) {
-        return BulkError("ERR no Parametrs");
-      }
-      const subcommand = getData(0).toUpperCase();
-      switch (subcommand) {
-        case "WHOAMI":
-          const data = client.user?.name || "default";
-          return BulkString(data);
-        case "GETUSER":
-          index = users.findIndex((person) => person.name === username);
-          if (index >= 0) {
-            user = users[index];
-            console.log(user);
-          } else {
-            return SimpleString("User not found");
-          }
-          const array = BulkArray(
-            [
-              BulkString("flags"),
-              BulkArray(user.flagArray),
-              BulkString("passwords"),
-              BulkArray(user.passwordArray),
-            ],
-            false,
-          );
-          console.log(array + "dadss");
-          return array;
-          break;
-        case "SETUSER":
-          index = users.findIndex((person) => person.name === username);
-          if (index >= 0) {
-            user = users[index];
-            console.log(user);
-          } else {
-            return SimpleString("User not found");
-            break;
-          }
-          let Parametrs: string = getData(2);
-          if (Parametrs.startsWith(">")) {
-            let password = Parametrs.slice(1);
-            password = await generateSHA256(password);
-            user.passwordArray.push(password);
-
-            const len = GetIndex("nopass", user.flagArray);
-            if (len !== -1) {
-              user.flagArray.splice(len, 1);
-            }
-          }
-          return SimpleString("OK");
-        default:
-          return BulkString("Command not found");
-      } //ACL
+      return acl(arg, client);
     case Commands.Auth:
       username = getData(0);
       user;
