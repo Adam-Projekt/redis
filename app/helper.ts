@@ -1,5 +1,6 @@
 export const CRLF = "\r\n";
 export const NULLBULKSTRING = "$-1\r\n";
+export const NULLBULKARRAY = "*-1\r\n";
 
 export function BulkString(input: any) {
   if (input == undefined) {

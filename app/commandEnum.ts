@@ -1,4 +1,5 @@
 import { get } from "./commands/get";
+import { set } from "./commands/set";
 
 export enum Commands {
   Set = "",
@@ -7,6 +8,7 @@ export enum Commands {
   Lpush = "LPUSH",
   Llen = "Llen",
   Lpop = "LPOP",
+  Blpop = "BLPOP",
   Lrange = "LRAGE",
   Auth = "AUTH", //auth/manage thing
   Acl = "ACL",
@@ -26,5 +28,5 @@ export enum Commands {
 //
 export const CommandTable = {
   Set: () => get,
-  Get: () => get,
+  Get: () => set,
 };

@@ -22,7 +22,14 @@ export const users: User[] = [new User("default", ["nopass"], [])];
 export async function Manage(arg: string[], client: Client) {
   if (arg.length == 0) {
     client.socket.write(BulkError("ERR No parameters"));
+    return;
   }
+
+  if (client.blocked) {
+    client.socket.write(BulkError("ERR client is blocked"));
+    return;
+  }
+
   const input: string = arg[0].toLocaleUpperCase();
   let command: Commands = Commands.Not;
   switch (input) {
@@ -37,6 +44,14 @@ export async function Manage(arg: string[], client: Client) {
     case "LPOP":
       if (arg.length > 1) {
         command = Commands.Lpop;
+      } else {
+        client.socket.write(BulkError("ERR Not enough arguments"));
+        return;
+      }
+      break;
+    case "BLPOP":
+      if (arg.length > 2) {
+        command = Commands.Blpop;
       } else {
         client.socket.write(BulkError("ERR Not enough arguments"));
         return;

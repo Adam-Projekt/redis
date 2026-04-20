@@ -14,6 +14,9 @@ import { Client } from "./client";
 import { User, Mem, getActiveMem } from "./class";
 import { mem, users } from "./command-handler";
 import { Commands } from "./commandEnum";
+import { get } from "./commands/get";
+import { set } from "./commands/set";
+import { blockClient, serveBlockedClients, tryBlpop } from "./blocking";
 
 export async function handle(arg: string[], command: Commands, client: Client) {
   //helper function
@@ -34,64 +37,10 @@ export async function handle(arg: string[], command: Commands, client: Client) {
 
   switch (command) {
     case Commands.Set:
-      const key2 = getData(0);
-      const value2 = getData(1);
-
-      let px_index = -1; //expire in miliseconds
-      let ex_index = -1; //expire in seconds
-      let include_nx = false; //create only if not exist
-
-      for (let i = 0; i < arg.length; i++) {
-        if (arg[i].toUpperCase() == "PX" && i > 1) {
-          px_index = i;
-        } else if (arg[i].toUpperCase() == "EX" && i > 1) {
-          ex_index = i;
-        } else if (arg[i].toUpperCase() == "NX" && i > 1) {
-          include_nx = true;
-        }
-      }
-
-      let ttlMs: number | null = null;
-      if (px_index != -1) {
-        ttlMs = Number(getData(px_index + 1));
-      } else if (ex_index != -1) {
-        ttlMs = Number(getData(ex_index + 1)) * 1000;
-      }
-
-      if (ttlMs !== null && (!Number.isFinite(ttlMs) || ttlMs <= 0)) {
-        client.socket.write(BulkError("ERR invalid expire time"));
-        return;
-      }
-
-      const existing = getActiveMem(mem, key2);
-      if (existing && include_nx) {
-        //check if exist and create only if not exist is true
-        client.socket.write(NULLBULKSTRING);
-        return;
-      }
-
-      existing?.clearExpiry();
-
-      const entry = new Mem([value2], 0);
-      if (ttlMs !== null) {
-        entry.scheduleExpiry(key2, mem, ttlMs);
-      }
-      mem.set(key2, entry); // set the value
-
-      client.socket.write(SimpleString("OK")); //return succes
+      client.socket.write(set(arg));
       break;
     case Commands.Get:
-      const data = getActiveMem(mem, getData(0));
-      if (!data) {
-        client.socket.write(NULLBULKSTRING);
-        return;
-      }
-
-      if (data.WhatData !== 0) {
-        client.socket.write(BulkError("WRONGTYPE"));
-        break;
-      }
-      client.socket.write(BulkString(data?.data[0] || undefined));
+      client.socket.write(get(arg));
       break;
     case Commands.Lpush:
       const key4 = getData(0);
@@ -110,8 +59,10 @@ export async function handle(arg: string[], command: Commands, client: Client) {
           mem.set(key4, list4);
         }
       }
+      const lpushLength = getActiveMem(mem, key4)?.data.length || 0;
+      serveBlockedClients(mem, key4);
       console.log("finish");
-      client.socket.write(BulkInteger(getActiveMem(mem, key4)?.data.length || 0));
+      client.socket.write(BulkInteger(lpushLength));
       break; //lpush
     case Commands.Rpush:
       const key = getData(0);
@@ -130,8 +81,10 @@ export async function handle(arg: string[], command: Commands, client: Client) {
           mem.set(key, list);
         }
       }
+      const rpushLength = getActiveMem(mem, key)?.data.length || 0;
+      serveBlockedClients(mem, key);
       console.log("finish");
-      client.socket.write(BulkInteger(getActiveMem(mem, key)?.data.length || 0));
+      client.socket.write(BulkInteger(rpushLength));
       break; //Rpush
     case Commands.Lrange:
       const key3 = getActiveMem(mem, getData(0));
@@ -213,8 +166,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
           response2.push(arra.data[i]);
         }
       }
-      response2[0] = arra.data[0]
-      
+      response2[0] = arra.data[0];
 
       arra.data = arra.data.slice(vari);
       if (response2.length == 1) {
@@ -224,6 +176,28 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       }
 
       break;
+    case Commands.Blpop:
+      const keys = arg.slice(0, arg.length - 1);
+      const timeoutSeconds = Number(arg[arg.length - 1]);
+
+      if (!Number.isFinite(timeoutSeconds) || timeoutSeconds < 0) {
+        client.socket.write(BulkError("ERR timeout is not a float or out of range"));
+        return;
+      }
+
+      const blpopResult = tryBlpop(mem, keys);
+      if (blpopResult.status === "wrongtype") {
+        client.socket.write(BulkError("WRONGTYPE"));
+        return;
+      }
+
+      if (blpopResult.status === "value") {
+        client.socket.write(BulkArray([blpopResult.key, blpopResult.value]));
+        return;
+      }
+
+      blockClient(client, keys, timeoutSeconds);
+      return;
     case Commands.Acl:
       username = getData(1);
       if (arg.length == 0) {

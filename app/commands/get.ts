@@ -4,7 +4,7 @@ import { getActiveMem } from "../class";
 
 export function get(arg: string[]) {
   if (arg.length != 1) {
-    return BulkError("ERR not enough parameters");
+    return BulkError("ERR must use 1 parameters");
   }
   const data = getActiveMem(mem, arg[0]);
   if (!data) {

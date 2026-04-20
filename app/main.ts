@@ -2,6 +2,7 @@ import * as net from "net";
 import { Manage } from "./command-handler";
 import { Client } from "./client";
 import { users } from "./command-handler";
+import { cleanupBlockedClient } from "./blocking";
 
 console.log("Logs from your program will appear here!");
 
@@ -18,6 +19,10 @@ const server = net.createServer((connection) => {
     }
     console.log(UserData);
     Manage(UserData, client);
+  });
+
+  connection.on("close", () => {
+    cleanupBlockedClient(client);
   });
 });
 
