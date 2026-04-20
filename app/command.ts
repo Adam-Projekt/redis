@@ -136,7 +136,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
             client.socket.write(SimpleString("User not found"));
             break;
           }
-          let Parametrs: string = getData(1);
+          let Parametrs: string = getData(2);
           if (Parametrs.startsWith(">")) {
             let password = Parametrs.slice(1);
             password = await generateSHA256(password);
@@ -186,7 +186,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       }
       break; //AUTH
     case Commands.Echo:
-      client.socket.write(BulkString(getData(1)));
+      client.socket.write(BulkString(getData(0)));
       break; //Echo
     case Commands.Ping:
       client.socket.write(SimpleString("PONG"));

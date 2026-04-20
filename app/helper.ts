@@ -22,7 +22,6 @@ export function BulkArray(input: string[], connect: boolean = true) {
 
   return "*" + input.length + CRLF + arrays;
 }
-
 export async function generateSHA256(input: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(input);
