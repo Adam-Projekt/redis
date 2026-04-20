@@ -163,9 +163,10 @@ export async function Manage(arg: string[], client: Client) {
   if (client.isTransaction && !allowInTransaction.includes(command)) {
     if (command == Commands.Watch) {
       client.socket.write(BulkError("ERR WATCH inside MULTI is not allowed"));
+    } else {
+      client.TransactionArray.push(new query(command, arg));
+      client.socket.write(SimpleString("QUEUED"));
     }
-    client.TransactionArray.push(new query(command, arg));
-    client.socket.write(SimpleString("QUEUED"));
   } else {
     client.socket.write(await handle(arg, command, client));
   }
