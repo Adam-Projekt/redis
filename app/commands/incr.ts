@@ -18,7 +18,7 @@ export function incr(arg: string[]) {
   }
 
   let num = Number(data.data[0]);
-  if (num == undefined) {
+  if (Number.isNaN(num)) {
     return BulkError("ERR value is not an integer or out of range");
   }
   num++;
