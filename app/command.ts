@@ -13,16 +13,16 @@ import {
 import { User, Mem, getActiveMem, Client } from "./class";
 import { mem, users } from "./command-handler";
 import { Commands } from "./commandEnum";
-import { get } from "./commands/get";
-import { set } from "./commands/set";
+import { get } from "./commands/basic/get";
+import { set } from "./commands/basic/set";
 import { blockClient, serveBlockedClients, tryBlpop } from "./blocking";
 import { type } from "./commands/type";
-import { watch } from "./commands/watch";
+import { watch } from "./commands/transactions/watch";
 import { incr } from "./commands/incr";
-import { multi } from "./commands/multi";
-import { exec } from "./commands/exec";
-import { discard } from "./commands/discard";
-import { unwatch } from "./commands/unwatch";
+import { multi } from "./commands/transactions/multi";
+import { exec } from "./commands/transactions/exec";
+import { discard } from "./commands/transactions/discard";
+import { unwatch } from "./commands/transactions/unwatch";
 import { markKeyModified } from "./keyspace";
 
 export async function handle(
@@ -60,30 +60,8 @@ export async function handle(
       return set(arg);
     case Commands.Get:
       return get(arg);
-
     case Commands.Lpush:
-      const key4 = getData(0);
-      let list4 = getActiveMem(mem, key4);
-
-      for (let i = 1; i < arg.length; i++) {
-        const value = arg[i];
-        if (list4) {
-          if (list4.WhatData !== 1) {
-            return BulkError("WRONGTYPE");
-            return;
-          }
-          list4.data.unshift(value);
-        } else {
-          list4 = new Mem([value], 1);
-          mem.set(key4, list4);
-        }
-      }
-      const lpushLength = getActiveMem(mem, key4)?.data.length || 0;
-      markKeyModified(key4);
-      serveBlockedClients(mem, key4);
-      console.log("finish");
-      return BulkInteger(lpushLength);
-      break; //lpush
+      
     case Commands.Rpush:
       const key = getData(0);
       let list = getActiveMem(mem, key);

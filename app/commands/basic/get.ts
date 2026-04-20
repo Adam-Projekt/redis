@@ -1,6 +1,6 @@
-import { BulkString, BulkError, NULLBULKSTRING } from "../helper";
-import { mem } from "../command-handler";
-import { getActiveMem } from "../class";
+import { BulkString, BulkError, NULLBULKSTRING } from "../../helper";
+import { mem } from "../../command-handler";
+import { getActiveMem } from "../../class";
 
 export function get(arg: string[]) {
   if (arg.length != 1) {

@@ -1,6 +1,6 @@
-import { Client } from "../class";
-import { handle } from "../command";
-import { BulkArray, BulkError, NULLBULKARRAY } from "../helper";
+import { Client } from "../../class";
+import { handle } from "../../command";
+import { BulkArray, BulkError, NULLBULKARRAY } from "../../helper";
 
 export async function exec(arg: string[], client: Client) {
   if (arg.length != 0) {

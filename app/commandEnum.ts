@@ -1,9 +1,9 @@
-import { get } from "./commands/get";
+import { get } from "./commands/basic/get";
 import { incr } from "./commands/incr";
-import { multi } from "./commands/multi";
-import { set } from "./commands/set";
+import { multi } from "./commands/transactions/multi";
+import { set } from "./commands/basic/set";
 import { type } from "./commands/type";
-import { watch } from "./commands/watch";
+import { watch } from "./commands/transactions/watch";
 
 export enum Commands {
   Set = "SET",
