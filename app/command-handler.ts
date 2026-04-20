@@ -159,11 +159,8 @@ export async function Manage(arg: string[], client: Client) {
     client.socket.write(SimpleString("PONG")); //command unknown
     return;
   }
-
-  if (
-    client.isTransaction &&
-    command != Commands.Exec || command != Commands.Discard)
-   {
+  const allowInTransaction = [Commands.Exec, Commands.Discard];
+  if (client.isTransaction && !allowInTransaction.includes(command)) {
     client.TransactionArray.push(new query(command, arg));
     client.socket.write(SimpleString("QUEUED"));
   } else {
