@@ -36,9 +36,20 @@ export async function handle(arg: string[], command: Commands, client: Client) {
   switch (command) {
     case Commands.Set:
       const key2 = getData(0);
-      const px_index = GetIndex("PX", arg); //expire in miliseconds
-      const ex_index = GetIndex("EX", arg); //expire in seconds
-      const include_nx = Contain("NX", arg); //create only if not exist
+
+      let px_index = -1; //expire in miliseconds
+      let ex_index = -1; //expire in seconds
+      let include_nx = false; //create only if not exist
+
+      for (let i = 0; i < arg.length; i++) {
+        if (arg[i].toUpperCase() == "PX" && i > 1) {
+          px_index = i;
+        } else if (arg[i].toUpperCase() == "EX" && i > 1) {
+          ex_index = i;
+        } else if (arg[i].toUpperCase() == "NX" && i > 1) {
+          include_nx = true;
+        }
+      }
 
       if (mem.has(key2) && include_nx) {
         //check if exist and create only if not exist is true

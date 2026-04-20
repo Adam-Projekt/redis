@@ -20,6 +20,9 @@ export const mem = new Map<string, Mem>();
 export const users: User[] = [new User("default", ["nopass"], [])];
 
 export async function Manage(arg: string[], client: Client) {
+  if (arg.length == 0) {
+    client.socket.write(BulkError("ERR No parameters"));
+  }
   const input: string = arg[0].toLocaleUpperCase();
   let command: Commands = Commands.Not;
   switch (input) {
@@ -83,11 +86,10 @@ export async function Manage(arg: string[], client: Client) {
 
   arg = arg.slice(1); //removes first element and shift
 
- 
   console.log(command);
   if (command == Commands.Not) {
     client.socket.write(SimpleString("PONG")); //command unknown
     return;
   }
-  handle(arg, command, client);
+  await handle(arg, command, client);
 }
