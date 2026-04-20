@@ -22,6 +22,7 @@ import { incr } from "./commands/incr";
 import { multi } from "./commands/multi";
 import { exec } from "./commands/exec";
 import { discard } from "./commands/discard";
+import { unwatch } from "./commands/unwatch";
 import { markKeyModified } from "./keyspace";
 
 export async function handle(
@@ -45,6 +46,8 @@ export async function handle(
   }
 
   switch (command) {
+    case Commands.Unwatch:
+      return unwatch(arg, client);
     case Commands.Exec:
       return exec(arg, client);
     case Commands.Multi:

@@ -13,6 +13,7 @@ export enum Commands {
   Exec = "EXEC",
   Discard = "DISCARD",
   Watch = "WATCH",
+  Unwatch = "UNWATCH",
   Rpush = "RPUSH", //List thing
   Lpush = "LPUSH",
   Llen = "Llen",

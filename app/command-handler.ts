@@ -139,6 +139,9 @@ export async function Manage(arg: string[], client: Client) {
         return;
       }
       break;
+    case "UNWATCH":
+      command = Commands.Unwatch;
+      break;
     case "ECHO":
       if (arg.length > 1) {
         command = Commands.Echo;
