@@ -16,7 +16,7 @@ export function incr(arg: string[]) {
   if (data.WhatData != 0) {
     return BulkError("WRONGTYPE");
   }
-  if (!Number.isInteger(data.data[0])) {
+  if (Number.isFinite(data.data[0])) {
     return BulkError("ERR value is not an integer or out of range");
   }
   let num = Number(data.data[0]);
