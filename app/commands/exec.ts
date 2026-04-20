@@ -25,5 +25,5 @@ export async function exec(arg: string[], client: Client) {
     );
   }
 
-  return SimpleString("ok");
+  return SimpleString(BulkArray(response, false));
 }
