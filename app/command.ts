@@ -198,7 +198,7 @@ export async function handle(
       }
 
       blockClient(client, keys, timeoutSeconds);
-      return;
+      return "";
     case Commands.Type:
       return type(arg);
       break;
