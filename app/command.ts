@@ -11,7 +11,7 @@ import {
   NULLBULKSTRING,
 } from "./helper";
 import { Client } from "./client";
-import { User, Mem } from "./class";
+import { User, Mem, getActiveMem } from "./class";
 import { mem, users } from "./command-handler";
 import { Commands } from "./commandEnum";
 
@@ -35,6 +35,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
   switch (command) {
     case Commands.Set:
       const key2 = getData(0);
+      const value2 = getData(1);
 
       let px_index = -1; //expire in miliseconds
       let ex_index = -1; //expire in seconds
@@ -50,36 +51,37 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         }
       }
 
-      if (mem.has(key2) && include_nx) {
+      let ttlMs: number | null = null;
+      if (px_index != -1) {
+        ttlMs = Number(getData(px_index + 1));
+      } else if (ex_index != -1) {
+        ttlMs = Number(getData(ex_index + 1)) * 1000;
+      }
+
+      if (ttlMs !== null && (!Number.isFinite(ttlMs) || ttlMs <= 0)) {
+        client.socket.write(BulkError("ERR invalid expire time"));
+        return;
+      }
+
+      const existing = getActiveMem(mem, key2);
+      if (existing && include_nx) {
         //check if exist and create only if not exist is true
         client.socket.write(NULLBULKSTRING);
         return;
       }
-      mem.set(key2, new Mem([getData(1)], 0)); // set the value
 
-      if (px_index != -1) {
-        setTimeout(
-          () => {
-            mem.delete(key2);
-          },
-          +getData(px_index + 1),
-        );
-      }
+      existing?.clearExpiry();
 
-      //set expiry in miliseconds
-      else if (ex_index != -1) {
-        setTimeout(
-          () => {
-            mem.delete(key2);
-          },
-          +getData(ex_index + 1) * 1000,
-        );
+      const entry = new Mem([value2], 0);
+      if (ttlMs !== null) {
+        entry.scheduleExpiry(key2, mem, ttlMs);
       }
+      mem.set(key2, entry); // set the value
 
       client.socket.write(SimpleString("OK")); //return succes
       break;
     case Commands.Get:
-      const data = mem.get(getData(0));
+      const data = getActiveMem(mem, getData(0));
       if (!data) {
         client.socket.write(NULLBULKSTRING);
         return;
@@ -93,42 +95,46 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       break;
     case Commands.Lpush:
       const key4 = getData(0);
+      let list4 = getActiveMem(mem, key4);
 
       for (let i = 1; i < arg.length; i++) {
         const value = arg[i];
-        if (mem.has(key4)) {
-          if (mem.get(key4)?.WhatData !== 1) {
+        if (list4) {
+          if (list4.WhatData !== 1) {
             client.socket.write(BulkError("WRONGTYPE"));
             return;
           }
-          mem.get(key4)?.data.unshift(value);
+          list4.data.unshift(value);
         } else {
-          mem.set(key4, new Mem([value], 1));
+          list4 = new Mem([value], 1);
+          mem.set(key4, list4);
         }
       }
       console.log("finish");
-      client.socket.write(BulkInteger(mem.get(key4)?.data.length || 0));
+      client.socket.write(BulkInteger(getActiveMem(mem, key4)?.data.length || 0));
       break; //lpush
     case Commands.Rpush:
       const key = getData(0);
+      let list = getActiveMem(mem, key);
 
       for (let i = 1; i < arg.length; i++) {
         const value = arg[i];
-        if (mem.has(key)) {
-          if (mem.get(key)?.WhatData !== 1) {
+        if (list) {
+          if (list.WhatData !== 1) {
             client.socket.write(BulkError("WRONGTYPE"));
             return;
           }
-          mem.get(key)?.data.push(value);
+          list.data.push(value);
         } else {
-          mem.set(key, new Mem([value], 1));
+          list = new Mem([value], 1);
+          mem.set(key, list);
         }
       }
       console.log("finish");
-      client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
+      client.socket.write(BulkInteger(getActiveMem(mem, key)?.data.length || 0));
       break; //Rpush
     case Commands.Lrange:
-      const key3 = mem.get(getData(0));
+      const key3 = getActiveMem(mem, getData(0));
       if (key3 == undefined) {
         client.socket.write(BulkArray([], false)); //empty bulk array
         return;
@@ -171,7 +177,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
 
       break;
     case Commands.Llen:
-      const arr = mem.get(getData(0));
+      const arr = getActiveMem(mem, getData(0));
       if (arr == undefined) {
         client.socket.write(BulkInteger(0));
         return;
@@ -185,7 +191,7 @@ export async function handle(arg: string[], command: Commands, client: Client) {
 
       break;
     case Commands.Lpop:
-      const arra = mem.get(getData(0));
+      const arra = getActiveMem(mem, getData(0));
       if (arra == undefined) {
         client.socket.write(NULLBULKSTRING);
         return;
@@ -206,9 +212,9 @@ export async function handle(arg: string[], command: Commands, client: Client) {
         for (let i = 0; i < vari; i++) {
           response2.push(arra.data[i]);
         }
-      } else {
-        response2.push(arra.data[0])
       }
+      response2[0] = arra.data[0]
+      
 
       arra.data = arra.data.slice(vari);
       if (response2.length == 1) {

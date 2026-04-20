@@ -1,12 +1,14 @@
+import { get } from "./commands/get";
+
 export enum Commands {
-  Set = "SET",
+  Set = "",
   Get = "GET",
   Rpush = "RPUSH", //List thing
   Lpush = "LPUSH",
   Llen = "Llen",
   Lpop = "LPOP",
   Lrange = "LRAGE",
-  Auth = "AUTH",//auth/manage thing
+  Auth = "AUTH", //auth/manage thing
   Acl = "ACL",
   Ping = "PING",
   Echo = "ECHO",
@@ -22,3 +24,7 @@ export enum Commands {
 //   Echo = 1,
 // }
 //
+export const CommandTable = {
+  Set: () => get,
+  Get: () => get,
+};
