@@ -27,6 +27,7 @@ import { markKeyModified } from "./keyspace";
 import { lpush } from "./commands/lists/lpush";
 import { rpush } from "./commands/lists/rpush";
 import { acl } from "./commands/auth/acl";
+import { config } from "./commands/config/config";
 
 export async function handle(
   arg: string[],
@@ -169,7 +170,7 @@ export async function handle(
     case Commands.Discard:
       return discard(arg, client);
     case Commands.Config:
-      
+      return config(arg);
     case Commands.Type:
       return type(arg);
       break;
@@ -209,6 +210,5 @@ export async function handle(
       break; //PING //PING
     default:
       return "";
-      break;
   }
 }

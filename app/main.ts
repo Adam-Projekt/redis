@@ -9,8 +9,6 @@ console.log(argv);
 export const dir = argv[3] || "";
 export const dbfilename = argv[5];
 
-console.log("Logs from your program will appear here!");
-
 const server = net.createServer((connection) => {
   const client = new Client(connection, users[0]);
 
