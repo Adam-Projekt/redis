@@ -201,10 +201,12 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       }
 
       let response2: string[] = [];
-
-      for (let i = 1; i < arg.length; i++) {
-        response2.push(arg[i]);
+      if (arg.length > 1) {
+        for (let i = 1; i < Number(arg[1]); i++) {
+          response2.push(arra.data[i]);
+        }
       }
+
       arra.data = arra.data.slice(response2.length);
       if (response2.length == 1) {
         client.socket.write(BulkString(response2[0]));
