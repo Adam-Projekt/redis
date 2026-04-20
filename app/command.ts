@@ -110,6 +110,41 @@ export async function handle(arg: string[], command: Commands, client: Client) {
       console.log("finish");
       client.socket.write(BulkInteger(mem.get(key)?.data.length || 0));
       break; //Rpush
+    case Commands.Lrange:
+      const key3 = mem.get(getData(0));
+      if (key3 == undefined) {
+        client.socket.write(BulkArray([], false)); //empty bulk array
+        return;
+      }
+      if (key3?.WhatData !== 1) {
+        client.socket.write(BulkError("WRONGTYPE"));
+        return;
+      }
+      const array = key3.data;
+
+      let start: number = Number(getData(1));
+      let stop: number = Number(getData(2));
+
+      if (start >= array.length) {
+        client.socket.write(BulkArray([], false)); //empty bulk array
+        return;
+      }
+      if (start > stop) {
+        client.socket.write(BulkArray([], false)); //empty bulk array
+        return;
+      }
+      if (stop >= array.length) {
+        stop = array.length - 1;
+      }
+      let response: string[] = [];
+      for (let i = 0; i < array.length; i++) {
+        if (i >= start && i <= stop) {
+          response.push(array[i]);
+        }
+      }
+      client.socket.write(BulkArray(response));
+
+      break;
     case Commands.Acl:
       username = getData(1);
       switch (subcommand) {
