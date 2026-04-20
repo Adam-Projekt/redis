@@ -67,11 +67,15 @@ export class Client {
   authenticated: boolean;
   user: User | null;
   blocked: boolean;
+  isTransaction: boolean;
+  TransactionArray: string[];
 
   constructor(socket: net.Socket, defaultUser: User) {
     this.socket = socket;
     this.user = defaultUser;
     this.blocked = false;
+    this.isTransaction = false;
+    this.TransactionArray = [];
 
     this.authenticated = defaultUser.flagArray.includes("nopass");
   }
