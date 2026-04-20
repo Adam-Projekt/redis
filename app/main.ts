@@ -1,6 +1,6 @@
 import * as net from "net";
 import { Manage } from "./command-handler";
-import { Client } from "./client";
+import { Client } from "./class";
 import { users } from "./command-handler";
 import { cleanupBlockedClient } from "./blocking";
 
