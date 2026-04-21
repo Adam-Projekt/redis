@@ -1,8 +1,16 @@
 import { Client } from "../../class";
-import { handle } from "../../command";
+import { Commands } from "../../commandEnum";
 import { BulkArray, BulkError, NULLBULKARRAY } from "../../helper";
 
-export async function exec(arg: string[], client: Client) {
+export async function exec(
+  arg: string[],
+  client: Client,
+  runCommand: (
+    arg: string[],
+    command: Commands,
+    client: Client,
+  ) => Promise<string>,
+) {
   if (arg.length != 0) {
     return BulkError("ERR must use 0 parameters");
   }
@@ -26,13 +34,7 @@ export async function exec(arg: string[], client: Client) {
 
   let response: string[] = [];
   for (let i = 0; i < queue.length; i++) {
-    response.push(
-      await handle(
-        queue[i].arg,
-        queue[i].command,
-        client,
-      ) || "",
-    );
+    response.push((await runCommand(queue[i].arg, queue[i].command, client)) || "");
   }
   client.clearWatch();
 

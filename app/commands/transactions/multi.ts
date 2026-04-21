@@ -1,6 +1,5 @@
-import { BulkString, BulkError, NULLBULKSTRING, SimpleString } from "../../helper";
-import { mem } from "../../command-handler";
-import { Client, getActiveMem } from "../../class";
+import { BulkError, SimpleString } from "../../helper";
+import { Client } from "../../class";
 
 export function multi(arg: string[], client: Client) {
   if (arg.length != 0) {

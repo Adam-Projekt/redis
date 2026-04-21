@@ -1,4 +1,4 @@
-import { mem } from "../command-handler";
+import { mem } from "../state";
 import { getActiveMem } from "../class";
 import { BulkError, SimpleString } from "../helper";
 export function type(arg: string[]) {

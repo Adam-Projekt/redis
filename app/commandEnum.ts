@@ -1,10 +1,3 @@
-import { get } from "./commands/basic/get";
-import { incr } from "./commands/incr";
-import { multi } from "./commands/transactions/multi";
-import { set } from "./commands/basic/set";
-import { type } from "./commands/type";
-import { watch } from "./commands/transactions/watch";
-
 export enum Commands {
   Set = "SET",
   Get = "GET",
@@ -28,21 +21,3 @@ export enum Commands {
   Echo = "ECHO",
   Not = "NOT",
 }
-//export enum ArgRequider {
-//   Set = 2,
-//   Get = 1,
-//   Acl = 1,
-//   Rpush = 2,
-//   Auth = 2,
-//   Ping = 0,
-//   Echo = 1,
-// }
-//
-export const CommandTable = {
-  Set: () => get,
-  Get: () => set,
-  Type: () => type,
-  Watch: () => watch,
-  Incr: () => incr,
-  Multi: () => multi,
-};

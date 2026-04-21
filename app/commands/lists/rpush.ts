@@ -1,6 +1,6 @@
 import { serveBlockedClients } from "../../blocking";
 import { getActiveMem, Mem } from "../../class";
-import { mem } from "../../command-handler";
+import { mem } from "../../state";
 import { BulkError, BulkInteger } from "../../helper";
 import { markKeyModified } from "../../keyspace";
 

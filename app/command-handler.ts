@@ -1,12 +1,9 @@
 //my things
-import { SimpleString, BulkError, NULLBULKSTRING } from "./helper";
-import { User, Mem, Client, query } from "./class";
+import { SimpleString, BulkError } from "./helper";
+import { Client, query } from "./class";
 import { Commands } from "./commandEnum";
 import { handle } from "./command";
-
-export const mem = new Map<string, Mem>();
-
-export const users: User[] = [new User("default", ["nopass"], [])];
+export { mem, users } from "./state";
 
 export async function Manage(arg: string[], client: Client) {
   if (arg.length == 0) {
@@ -16,6 +13,10 @@ export async function Manage(arg: string[], client: Client) {
 
   if (client.blocked) {
     client.socket.write(BulkError("ERR client is blocked"));
+    return;
+  }
+  if (!client.user?.enable) {
+    client.socket.write(BulkError("ERR user is blocked"));
     return;
   }
 

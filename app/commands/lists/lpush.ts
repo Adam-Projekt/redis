@@ -1,4 +1,4 @@
-import { mem } from "../../command-handler";
+import { mem } from "../../state";
 import { getActiveMem, Mem } from "../../class";
 import { BulkError, BulkInteger } from "../../helper";
 import { markKeyModified } from "../../keyspace";

@@ -1,5 +1,5 @@
 import { BulkString, BulkError, NULLBULKSTRING } from "../../helper";
-import { mem } from "../../command-handler";
+import { mem } from "../../state";
 import { getActiveMem } from "../../class";
 
 export function get(arg: string[]) {

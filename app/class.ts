@@ -6,10 +6,17 @@ export class User {
   passwordArray: string[] = [];
   flagArray: string[] = [];
   name: string = "default";
+  enable: boolean = true;
   constructor(name: string, flagArray: string[], passwordArray: string[]) {
     this.name = name;
     this.flagArray = flagArray;
     this.passwordArray = passwordArray;
+  }
+  reset() {
+    if (this.name == "default") {
+      this.flagArray = ["nopass"];
+    }
+    this.passwordArray = [];
   }
 }
 export class Mem {

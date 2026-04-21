@@ -1,5 +1,5 @@
 import { BulkString, BulkError, NULLBULKSTRING, BulkInteger } from "../helper";
-import { mem } from "../command-handler";
+import { mem } from "../state";
 import { getActiveMem, Mem } from "../class";
 import { markKeyModified } from "../keyspace";
 

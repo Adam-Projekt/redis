@@ -10,12 +10,12 @@ import {
   GetIndex,
   NULLBULKSTRING,
 } from "./helper";
-import { User, Mem, getActiveMem, Client } from "./class";
-import { mem, users } from "./command-handler";
+import { getActiveMem, Client } from "./class";
+import { mem, users } from "./state";
 import { Commands } from "./commandEnum";
 import { get } from "./commands/basic/get";
 import { set } from "./commands/basic/set";
-import { blockClient, serveBlockedClients, tryBlpop } from "./blocking";
+import { blockClient, tryBlpop } from "./blocking";
 import { type } from "./commands/type";
 import { watch } from "./commands/transactions/watch";
 import { incr } from "./commands/incr";
@@ -27,7 +27,6 @@ import { markKeyModified } from "./keyspace";
 import { lpush } from "./commands/lists/lpush";
 import { rpush } from "./commands/lists/rpush";
 import { acl } from "./commands/auth/acl";
-import { config } from "./commands/config/config";
 
 export async function handle(
   arg: string[],
@@ -53,7 +52,7 @@ export async function handle(
     case Commands.Unwatch:
       return unwatch(arg, client);
     case Commands.Exec:
-      return exec(arg, client);
+      return exec(arg, client, handle);
     case Commands.Multi:
       return multi(arg, client);
     case Commands.Incr:
@@ -169,8 +168,6 @@ export async function handle(
       return "";
     case Commands.Discard:
       return discard(arg, client);
-    case Commands.Config:
-      return config(arg);
     case Commands.Type:
       return type(arg);
       break;
@@ -192,7 +189,7 @@ export async function handle(
       const PasswordArray = user.passwordArray;
       let result = PasswordArray.findIndex((a) => a === InputPassword);
 
-      if (result !== -1 || user.flagArray.includes("nopass")) {
+      if ((result !== -1 || user.flagArray.includes("nopass")) && user.enable) {
         client.authenticated = true;
         client.user = user;
         return SimpleString("OK");
