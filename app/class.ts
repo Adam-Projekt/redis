@@ -21,7 +21,7 @@ export class User {
 }
 export class Mem {
   data: string[];
-  WhatData: number; // 0 FOR string; 1 for list
+  WhatData: number; // 0 FOR string; 1 for list; 2 for sorted set
   expiryAt: number | null;
   timeoutId: ReturnType<typeof setTimeout> | null;
   constructor(data: string[], WhatData: number = 0) {

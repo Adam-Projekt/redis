@@ -2,6 +2,7 @@ export enum Commands {
   Set = "SET",
   Get = "GET",
   Config = "CONFIG",
+  Zadd = "ZADD",
   Incr = "INCR",
   Multi = "MULTI",
   Exec = "EXEC",

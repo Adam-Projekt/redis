@@ -51,6 +51,19 @@ describe("module loading", () => {
     expect(result.exitCode).toBe(0);
   });
 
+  test("dispatcher and transaction modules load without recursive import failures", () => {
+    const modules = [
+      "./app/command.ts",
+      "./app/commands/transactions/exec.ts",
+      "./app/commands/auth/acl.ts",
+    ];
+
+    for (const modulePath of modules) {
+      const result = runImport(modulePath);
+      expect(result.exitCode).toBe(0);
+    }
+  });
+
   test("server process stays alive after startup", async () => {
     const result = await exitsCleanlyWithin(
       ["bun", "run", "app/main.ts", "--port", "6391"],

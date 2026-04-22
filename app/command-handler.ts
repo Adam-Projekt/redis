@@ -165,6 +165,7 @@ export async function Manage(arg: string[], client: Client) {
     default:
       break;
   }
+
   arg = arg.slice(1); //removes first element and shift
   console.log(command);
   if (command == Commands.Not) {
