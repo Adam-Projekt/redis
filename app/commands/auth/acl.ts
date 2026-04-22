@@ -2,7 +2,6 @@ import { Client, User } from "../../class";
 import { users } from "../../state";
 import {
   BulkArray,
-  BulkError,
   BulkString,
   generateSHA256,
   GetIndex,

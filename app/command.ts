@@ -25,6 +25,8 @@ import { markKeyModified } from "./keyspace";
 import { lpush } from "./commands/lists/lpush";
 import { rpush } from "./commands/lists/rpush";
 import { acl } from "./commands/auth/acl";
+import { llen } from "./commands/lists/llen";
+import { auth } from "./commands/auth/auth";
 
 export async function handle(
   arg: string[],
@@ -37,10 +39,6 @@ export async function handle(
       return arg[index];
     } else return "";
   }
-
-  let index;
-  let username: string;
-  let user;
 
   if (!client.authenticated && !(command == Commands.Auth)) {
     return BulkError("NOAUTH Authentication required.");
@@ -103,15 +101,7 @@ export async function handle(
       }
       return BulkArray(response);
     case Commands.Llen:
-      const arr = getActiveMem(mem, getData(0));
-      if (arr == undefined) {
-        return BulkInteger(0);
-      }
-      if (arr?.WhatData !== 1) {
-        return BulkError("WRONGTYPE");
-      }
-
-      return BulkInteger(arr.data.length);
+      return llen(arg);
     case Commands.Lpop:
       const arra = getActiveMem(mem, getData(0));
       if (arra == undefined) {
@@ -166,41 +156,14 @@ export async function handle(
       return discard(arg, client);
     case Commands.Type:
       return type(arg);
-      break;
     case Commands.Acl:
       return await acl(arg, client);
     case Commands.Auth:
-      username = getData(0);
-      user;
-      index = users.findIndex((person) => person.name === username);
-      if (index >= 0) {
-        user = users[index];
-        console.log(user);
-      } else {
-        return BulkError(
-          "WRONGPASS invalid username-password pair or user is disabled.",
-        ); //BulkError
-      }
-      const InputPassword = await generateSHA256(getData(1));
-      const PasswordArray = user.passwordArray;
-      let result = PasswordArray.findIndex((a) => a === InputPassword);
-
-      if ((result !== -1 || user.flagArray.includes("nopass")) && user.enable) {
-        client.authenticated = true;
-        client.user = user;
-        return SimpleString("OK");
-      } else {
-        return BulkError(
-          "WRONGPASS invalid username-password pair or user is disabled.",
-        ); // BulkError
-      }
-      break; //AUTH
+      return await auth(arg, client);
     case Commands.Echo:
       return BulkString(getData(0));
-      break; //Echo
     case Commands.Ping:
       return SimpleString("PONG");
-      break; //PING //PING
     default:
       return "";
   }

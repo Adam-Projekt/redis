@@ -13,6 +13,7 @@ export class User {
     this.passwordArray = passwordArray;
   }
   reset() {
+    this.flagArray = [];
     if (this.name == "default") {
       this.flagArray = ["nopass"];
     }
