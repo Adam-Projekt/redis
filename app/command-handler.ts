@@ -159,6 +159,14 @@ export async function Manage(arg: string[], client: Client) {
         return;
       }
       break;
+    case "ZADD":
+      if (arg.length < 4) {
+        command = Commands.Zadd;
+      } else {
+        client.socket.write(BulkError("ERR Not enough arguments"));
+        return;
+      }
+      break;
     case "PING":
       command = Commands.Ping;
       break;
