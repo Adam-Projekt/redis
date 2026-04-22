@@ -14,7 +14,7 @@ export enum Commands {
   Llen = "Llen",
   Lpop = "LPOP",
   Blpop = "BLPOP",
-  Lrange = "LRAGE",
+  Lrange = "LRANGE",
   Type = "TYPE",
   Auth = "AUTH", //auth/manage thing
   Acl = "ACL",
@@ -22,3 +22,20 @@ export enum Commands {
   Echo = "ECHO",
   Not = "NOT",
 }
+
+export enum DataType {
+  STRING = 0,
+  LIST = 1,
+  SORTED_SET = 2,
+  HASH = 3,
+  SET = 4,
+  STREAM = 5,
+}
+export const DataTypeNames: Record<DataType, string> = {
+  [DataType.STRING]: "string",
+  [DataType.LIST]: "list",
+  [DataType.SORTED_SET]: "zset",
+  [DataType.HASH]: "hash",
+  [DataType.SET]: "set",
+  [DataType.STREAM]: "stream",
+};

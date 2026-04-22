@@ -3,14 +3,12 @@ import {
   BulkString,
   SimpleString,
   BulkArray,
-  generateSHA256,
   BulkError,
-  BulkInteger,
   NULLBULKSTRING,
 } from "./helper";
 import { getActiveMem, Client } from "./class";
-import { mem, users } from "./state";
-import { Commands } from "./commandEnum";
+import { mem } from "./state";
+import { Commands } from "./enum";
 import { get } from "./commands/basic/get";
 import { set } from "./commands/basic/set";
 import { blockClient, tryBlpop } from "./blocking";
@@ -27,7 +25,7 @@ import { rpush } from "./commands/lists/rpush";
 import { acl } from "./commands/auth/acl";
 import { llen } from "./commands/lists/llen";
 import { auth } from "./commands/auth/auth";
-import { zaad } from "./commands/sorted_sets/zadd";
+import { zadd } from "./commands/sorted_sets/zadd";
 
 export async function handle(
   arg: string[],
@@ -47,7 +45,7 @@ export async function handle(
 
   switch (command) {
     case Commands.Zadd:
-      return zaad(arg);
+      return zadd(arg);
     case Commands.Unwatch:
       return unwatch(arg, client);
     case Commands.Exec:

@@ -1,3 +1,5 @@
+import { DataTypeNames, type DataType } from "./enum";
+
 export const CRLF = "\r\n";
 export const NULLBULKSTRING = "$-1\r\n";
 export const NULLBULKARRAY = "*-1\r\n";
@@ -57,4 +59,7 @@ export function GetIndex(item: string, input: string[]) {
     }
   }
   return -1;
+}
+export function getDataTypeName(type: DataType): string {
+  return DataTypeNames[type] || "unknown";
 }

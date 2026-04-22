@@ -1,7 +1,7 @@
 //my things
 import { SimpleString, BulkError } from "./helper";
 import { Client, query } from "./class";
-import { Commands } from "./commandEnum";
+import { Commands } from "./enum";
 import { handle } from "./command";
 export { mem, users } from "./state";
 

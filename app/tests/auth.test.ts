@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach } from "bun:test";
 import { BulkString, SimpleString, generateSHA256 } from "../helper";
 import { handle } from "../command";
-import { Commands } from "../commandEnum";
+import { Commands } from "../enum";
 import { Client, User } from "../class";
 import { mem, users } from "../state";
 import * as net from "net";

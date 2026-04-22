@@ -12,7 +12,7 @@ import { set } from "../commands/basic/set";
 import { mem } from "../command-handler";
 import { Mem, getActiveMem, Client, User } from "../class";
 import { handle } from "../command";
-import { Commands } from "../commandEnum";
+import { Commands } from "../enum";
 
 // Helper to clear the memory store before each test
 function clearMem() {

@@ -19,7 +19,7 @@ export function lpush(arg: string[]) {
       }
       list4.data.unshift(value);
     } else {
-      list4 = new Mem([value], 1);
+      list4 = new Mem([value], 1, undefined);
       mem.set(key, list4);
     }
   }

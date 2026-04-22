@@ -1,5 +1,5 @@
 import { Client } from "../../class";
-import { Commands } from "../../commandEnum";
+import { Commands } from "../../enum";
 import { BulkArray, BulkError, NULLBULKARRAY } from "../../helper";
 
 export async function exec(

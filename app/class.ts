@@ -1,6 +1,7 @@
 import * as net from "net";
-import { Commands } from "./commandEnum";
+import { Commands, DataType } from "./enum";
 import { getKeyVersion, markKeyModified } from "./keyspace";
+
 
 export class User {
   passwordArray: string[] = [];
@@ -31,12 +32,12 @@ export class Score {
 export class Mem {
   data: string[];
   sorted_sets: Score[] | undefined; //for sorted sets
-  WhatData: number; // 0 FOR string; 1 for list; 2 for sorted set
+  WhatData: DataType; // 0 FOR string; 1 for list; 2 for sorted set
   expiryAt: number | null;
   timeoutId: ReturnType<typeof setTimeout> | null;
   constructor(
     data: string[] = [],
-    WhatData: number = 0,
+    WhatData: DataType = 0,
     sorted_set: Score[] | undefined,
   ) {
     this.data = data;
