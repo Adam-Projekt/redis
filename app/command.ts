@@ -27,6 +27,7 @@ import { rpush } from "./commands/lists/rpush";
 import { acl } from "./commands/auth/acl";
 import { llen } from "./commands/lists/llen";
 import { auth } from "./commands/auth/auth";
+import { zaad } from "./commands/sorted_sets/zadd";
 
 export async function handle(
   arg: string[],
@@ -45,6 +46,8 @@ export async function handle(
   }
 
   switch (command) {
+    case Commands.Zadd:
+      return zaad(arg);
     case Commands.Unwatch:
       return unwatch(arg, client);
     case Commands.Exec:
