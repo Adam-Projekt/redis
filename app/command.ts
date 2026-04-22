@@ -6,8 +6,6 @@ import {
   generateSHA256,
   BulkError,
   BulkInteger,
-  Contain,
-  GetIndex,
   NULLBULKSTRING,
 } from "./helper";
 import { getActiveMem, Client } from "./class";
@@ -114,8 +112,6 @@ export async function handle(
       }
 
       return BulkInteger(arr.data.length);
-
-      break;
     case Commands.Lpop:
       const arra = getActiveMem(mem, getData(0));
       if (arra == undefined) {

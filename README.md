@@ -1,4 +1,3 @@
-Redis in ts
 # Redis in typescript
-## redis in ts
-### redis in ts
+
+use run.sh to run it
