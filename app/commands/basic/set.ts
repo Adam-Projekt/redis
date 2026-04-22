@@ -43,7 +43,7 @@ export function set(arg: string[]) {
 
   existing?.clearExpiry();
 
-  const entry = new Mem([value], 0);
+  const entry = new Mem([value], 0, undefined);
   if (ttlMs !== null) {
     entry.scheduleExpiry(key, mem, ttlMs);
   }

@@ -20,17 +20,30 @@ export class User {
     this.passwordArray = [];
   }
 }
+export class Score {
+  score: number;
+  stringValue: string;
+  constructor(score: number, data: string) {
+    this.score = score;
+    this.stringValue = data;
+  }
+}
 export class Mem {
   data: string[];
-  score: number[] | undefined; //for sorted sets
+  sorted_sets: Score[] | undefined; //for sorted sets
   WhatData: number; // 0 FOR string; 1 for list; 2 for sorted set
   expiryAt: number | null;
   timeoutId: ReturnType<typeof setTimeout> | null;
-  constructor(data: string[], WhatData: number = 0) {
+  constructor(
+    data: string[] = [],
+    WhatData: number = 0,
+    sorted_set: Score[] | undefined,
+  ) {
     this.data = data;
     this.WhatData = WhatData;
     this.expiryAt = null;
     this.timeoutId = null;
+    this.sorted_sets = sorted_set;
   }
 
   clearExpiry() {
