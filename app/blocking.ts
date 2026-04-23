@@ -1,6 +1,7 @@
-import { Mem, getActiveMem,Client } from "./class";
+import { Mem, getActiveMem, Client } from "./class";
 import { BulkArray, BulkError, NULLBULKARRAY } from "./helper";
 import { markKeyModified } from "./keyspace";
+import { ErrorMessages } from "./error";
 
 type TryBlpopResult =
   | { status: "empty" }
@@ -65,14 +66,17 @@ export function blockClient(
   }
 
   if (timeoutSeconds > 0) {
-    request.timer = setTimeout(() => {
-      if (blockedByClient.get(client) !== request) {
-        return;
-      }
+    request.timer = setTimeout(
+      () => {
+        if (blockedByClient.get(client) !== request) {
+          return;
+        }
 
-      removeBlockedRequest(request);
-      client.socket.write(NULLBULKARRAY);
-    }, Math.ceil(timeoutSeconds * 1000));
+        removeBlockedRequest(request);
+        client.socket.write(NULLBULKARRAY);
+      },
+      Math.ceil(timeoutSeconds * 1000),
+    );
   }
 }
 
@@ -95,7 +99,7 @@ export function serveBlockedClients(store: Map<string, Mem>, key: string) {
     removeBlockedRequest(request);
 
     if (result.status === "wrongtype") {
-      request.client.socket.write(BulkError("WRONGTYPE"));
+      request.client.socket.write(BulkError(ErrorMessages.WRONG_TYPE));
     } else {
       request.client.socket.write(BulkArray([result.key, result.value]));
     }

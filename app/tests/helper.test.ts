@@ -9,6 +9,7 @@ import {
   GetIndex,
   SimpleString,
 } from "../helper";
+import { ErrorMessages } from "../error";
 
 describe("RESP helpers", () => {
   test("encodes bulk strings and null bulk strings", () => {
@@ -27,7 +28,7 @@ describe("RESP helpers", () => {
 
   test("encodes integers and errors", () => {
     expect(BulkInteger(42)).toBe(":42\r\n");
-    expect(BulkError("ERR boom")).toBe("-ERR boom\r\n");
+    expect(BulkError(ErrorMessages.SYNTAX_ERROR)).toBe("-ERR syntax error\r\n");
     expect(SimpleString("OK")).toBe("+OK\r\n");
   });
 

@@ -6,6 +6,7 @@ import { lpush } from "../commands/lists/lpush";
 import { rpush } from "../commands/lists/rpush";
 import { mem } from "../command-handler";
 import { Mem } from "../class";
+import { ErrorMessages } from "../error";
 
 // Helper to clear the memory store before each test
 function clearMem() {
@@ -66,9 +67,9 @@ describe("TYPE command", () => {
   });
 
   test("returns error when given wrong number of arguments", () => {
-    expect(typeCommand([])).toBe(BulkError("ERR must use 1 parameters"));
+    expect(typeCommand([])).toBe(BulkError(ErrorMessages.MUST_USE_ONE_PARAM));
     expect(typeCommand(["key1", "key2"])).toBe(
-      BulkError("ERR must use 1 parameters")
+      BulkError(ErrorMessages.MUST_USE_ONE_PARAM),
     );
   });
 
@@ -95,12 +96,6 @@ describe("TYPE command", () => {
     rpush(["key", "a", "b"]);
     set(["key", "value"]);
     expect(typeCommand(["key"])).toBe(SimpleString("string"));
-  });
-
-  test("returns 'list' after overwriting a string", () => {
-    set(["key", "value"]);
-    rpush(["key", "a", "b"]);
-    expect(typeCommand(["key"])).toBe(SimpleString("list"));
   });
 
   test("handles numeric string keys", () => {

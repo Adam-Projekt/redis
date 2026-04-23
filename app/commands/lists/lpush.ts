@@ -1,12 +1,13 @@
 import { mem } from "../../state";
 import { getActiveMem, Mem } from "../../class";
 import { BulkError, BulkInteger } from "../../helper";
+import { ErrorMessages } from "../../error";
 import { markKeyModified } from "../../keyspace";
 import { serveBlockedClients } from "../../blocking";
 
 export function lpush(arg: string[]) {
   if (arg.length < 1) {
-    return BulkError("ERR not enough parameters");
+    return BulkError(ErrorMessages.NOT_ENOUGH_PARAMS);
   }
   const key = arg[0];
   let list4 = getActiveMem(mem, key);
@@ -15,7 +16,7 @@ export function lpush(arg: string[]) {
     const value = arg[i];
     if (list4) {
       if (list4.WhatData !== 1) {
-        return BulkError("WRONGTYPE");
+        return BulkError(ErrorMessages.WRONG_TYPE);
       }
       list4.data.unshift(value);
     } else {

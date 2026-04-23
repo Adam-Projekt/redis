@@ -2,10 +2,12 @@ import { BulkString, BulkError, NULLBULKSTRING, BulkInteger } from "../helper";
 import { mem } from "../state";
 import { getActiveMem, Mem } from "../class";
 import { markKeyModified } from "../keyspace";
+import { ErrorMessages } from "../error";
+import { DataType } from "../enum";
 
 export function incr(arg: string[]) {
   if (arg.length != 1) {
-    return BulkError("ERR must use 1 parameters");
+    return BulkError(ErrorMessages.WRONG_ARG_COUNT("incr", 1));
   }
   const data = getActiveMem(mem, arg[0]);
   const key = arg[0];
@@ -15,13 +17,13 @@ export function incr(arg: string[]) {
     markKeyModified(key);
     return BulkInteger(1);
   }
-  if (data.WhatData != 0) {
-    return BulkError("WRONGTYPE");
+  if (data.WhatData != DataType.STRING) {
+    return BulkError(ErrorMessages.WRONG_TYPE);
   }
 
   let num = Number(data.data[0]);
   if (!Number.isInteger(num)) {
-    return BulkError("ERR value is not an integer or out of range");
+    return BulkError(ErrorMessages.NOT_INTEGER);
   }
   num++;
   data.data[0] = num.toString();

@@ -4,6 +4,7 @@ import { get } from "../commands/basic/get";
 import { set } from "../commands/basic/set";
 import { mem } from "../command-handler";
 import { Mem } from "../class";
+import { ErrorMessages } from "../error";
 
 // Helper to clear the memory store before each test
 function clearMem() {
@@ -21,7 +22,7 @@ describe("GET command", () => {
   beforeEach(clearMem);
 
   test("returns a bulk string when the key exists", () => {
-    mem.set("greeting", new Mem(["hello"], 0));
+    mem.set("greeting", new Mem(["hello"], 0, undefined));
     expect(get(["greeting"])).toBe(BulkString("hello"));
   });
 
@@ -39,13 +40,15 @@ describe("GET command", () => {
   });
 
   test("returns error when given wrong number of arguments", () => {
-    expect(get([])).toBe(BulkError("ERR must use 1 parameters"));
-    expect(get(["key1", "key2"])).toBe(BulkError("ERR must use 1 parameters"));
+    expect(get([])).toBe(BulkError(ErrorMessages.WRONG_ARG_COUNT("get", 1)));
+    expect(get(["key1", "key2"])).toBe(
+      BulkError(ErrorMessages.WRONG_ARG_COUNT("get", 1)),
+    );
   });
 
   test("returns error when trying to get a list", () => {
     mem.set("mylist", new Mem(["a", "b", "c"], 1));
-    expect(get(["mylist"])).toBe(BulkError("WRONGTYPE"));
+    expect(get(["mylist"])).toBe(BulkError(ErrorMessages.WRONG_TYPE));
   });
 
   test("returns null for empty string values stored", () => {
@@ -105,8 +108,10 @@ describe("SET command", () => {
   });
 
   test("returns error when given insufficient arguments", () => {
-    expect(set([])).toBe(BulkError("ERR not enough parameters"));
-    expect(set(["key"])).toBe(BulkError("ERR not enough parameters"));
+    expect(set([])).toBe(BulkError(ErrorMessages.WRONG_ARG_COUNT("set", 2)));
+    expect(set(["key"])).toBe(
+      BulkError(ErrorMessages.WRONG_ARG_COUNT("set", 2)),
+    );
   });
 
   test("sets with EX (expire in seconds)", async () => {
@@ -127,22 +132,22 @@ describe("SET command", () => {
 
   test("returns error for invalid EX time", () => {
     expect(set(["key", "value", "EX", "0"])).toBe(
-      BulkError("ERR invalid expire time"),
+      BulkError(ErrorMessages.INVALID_EXPIRE_TIME),
     );
     expect(set(["key", "value", "EX", "-1"])).toBe(
-      BulkError("ERR invalid expire time"),
+      BulkError(ErrorMessages.INVALID_EXPIRE_TIME),
     );
     expect(set(["key", "value", "EX", "notanumber"])).toBe(
-      BulkError("ERR invalid expire time"),
+      BulkError(ErrorMessages.INVALID_EXPIRE_TIME),
     );
   });
 
   test("returns error for invalid PX time", () => {
     expect(set(["key", "value", "PX", "0"])).toBe(
-      BulkError("ERR invalid expire time"),
+      BulkError(ErrorMessages.INVALID_EXPIRE_TIME),
     );
     expect(set(["key", "value", "PX", "-100"])).toBe(
-      BulkError("ERR invalid expire time"),
+      BulkError(ErrorMessages.INVALID_EXPIRE_TIME),
     );
   });
 

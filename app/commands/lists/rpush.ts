@@ -3,10 +3,11 @@ import { getActiveMem, Mem } from "../../class";
 import { mem } from "../../state";
 import { BulkError, BulkInteger } from "../../helper";
 import { markKeyModified } from "../../keyspace";
+import { ErrorMessages } from "../../error";
 
 export function rpush(arg: string[]) {
   if (arg.length < 1) {
-    return BulkError("ERR not enough parameters");
+    return BulkError(ErrorMessages.NOT_ENOUGH_PARAMS);
   }
   const key = arg[0];
   let list = getActiveMem(mem, key);
@@ -15,7 +16,7 @@ export function rpush(arg: string[]) {
     const value = arg[i];
     if (list) {
       if (list.WhatData !== 1) {
-        return BulkError("WRONGTYPE");
+        return BulkError(ErrorMessages.WRONG_TYPE);
       }
       list.data.push(value);
     } else {

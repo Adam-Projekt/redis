@@ -2,7 +2,6 @@ import * as net from "net";
 import { Commands, DataType } from "./enum";
 import { getKeyVersion, markKeyModified } from "./keyspace";
 
-
 export class User {
   passwordArray: string[] = [];
   flagArray: string[] = [];
@@ -38,7 +37,7 @@ export class Mem {
   constructor(
     data: string[] = [],
     WhatData: DataType = 0,
-    sorted_set: Score[] | undefined,
+    sorted_set: Score[] | undefined = undefined,
   ) {
     this.data = data;
     this.WhatData = WhatData;

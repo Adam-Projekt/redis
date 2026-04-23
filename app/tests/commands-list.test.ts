@@ -13,6 +13,7 @@ import { mem } from "../command-handler";
 import { Mem, getActiveMem, Client, User } from "../class";
 import { handle } from "../command";
 import { Commands } from "../enum";
+import { ErrorMessages } from "../error";
 
 // Helper to clear the memory store before each test
 function clearMem() {
@@ -72,7 +73,7 @@ describe("LPUSH command", () => {
 
   test("returns error when trying to push to a string", () => {
     set(["key", "value"]);
-    expect(lpush(["key", "item"])).toBe(BulkError("WRONGTYPE"));
+    expect(lpush(["key", "item"])).toBe(BulkError(ErrorMessages.WRONG_TYPE));
   });
 
   test("handles empty string values", () => {
@@ -142,7 +143,7 @@ describe("RPUSH command", () => {
 
   test("returns error when trying to push to a string", () => {
     set(["key", "value"]);
-    expect(rpush(["key", "item"])).toBe(BulkError("WRONGTYPE"));
+    expect(rpush(["key", "item"])).toBe(BulkError(ErrorMessages.WRONG_TYPE));
   });
 
   test("handles empty string values", () => {
@@ -240,7 +241,7 @@ describe("LRANGE command", () => {
     set(["key", "value"]);
     const client = createMockClient();
     const result = await handle(["key", "0", "1"], Commands.Lrange, client);
-    expect(result).toBe(BulkError("WRONGTYPE"));
+    expect(result).toBe(BulkError(ErrorMessages.WRONG_TYPE));
   });
 
   test("handles single element", async () => {
@@ -310,7 +311,7 @@ describe("LLEN command", () => {
     set(["key", "value"]);
     const client = createMockClient();
     const result = await handle(["key"], Commands.Llen, client);
-    expect(result).toBe(BulkError("WRONGTYPE"));
+    expect(result).toBe(BulkError(ErrorMessages.WRONG_TYPE));
   });
 
   test("returns updated length after push", async () => {
@@ -370,7 +371,7 @@ describe("LPOP command", () => {
     set(["key", "value"]);
     const client = createMockClient();
     const result = await handle(["key"], Commands.Lpop, client);
-    expect(result).toBe(BulkError("WRONGTYPE"));
+    expect(result).toBe(BulkError(ErrorMessages.WRONG_TYPE));
   });
 
   test("pops multiple elements", async () => {

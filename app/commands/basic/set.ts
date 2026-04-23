@@ -2,10 +2,12 @@ import { BulkError, NULLBULKSTRING, SimpleString } from "../../helper";
 import { mem } from "../../state";
 import { getActiveMem, Mem } from "../../class";
 import { markKeyModified } from "../../keyspace";
+import { ErrorMessages } from "../../error";
+import { DataType } from "../../enum";
 
 export function set(arg: string[]) {
   if (arg.length < 2) {
-    return BulkError("ERR not enough parameters");
+    return BulkError(ErrorMessages.WRONG_ARG_COUNT("set", 2));
   }
   const key = arg[0];
   const value = arg[1];
@@ -32,7 +34,7 @@ export function set(arg: string[]) {
   }
 
   if (ttlMs !== null && (!Number.isFinite(ttlMs) || ttlMs <= 0)) {
-    return BulkError("ERR invalid expire time");
+    return BulkError(ErrorMessages.INVALID_EXPIRE_TIME);
   }
 
   const existing = getActiveMem(mem, key);
@@ -43,7 +45,7 @@ export function set(arg: string[]) {
 
   existing?.clearExpiry();
 
-  const entry = new Mem([value], 0, undefined);
+  const entry = new Mem([value], DataType.STRING, undefined);
   if (ttlMs !== null) {
     entry.scheduleExpiry(key, mem, ttlMs);
   }

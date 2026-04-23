@@ -5,6 +5,7 @@ import { set } from "../commands/basic/set";
 import { get } from "../commands/basic/get";
 import { mem } from "../command-handler";
 import { Mem } from "../class";
+import { ErrorMessages } from "../error";
 
 // Helper to clear the memory store before each test
 function clearMem() {
@@ -64,34 +65,30 @@ describe("INCR command", () => {
   });
 
   test("returns error when given wrong number of arguments", () => {
-    expect(incr([])).toBe(BulkError("ERR must use 1 parameters"));
-    expect(incr(["key1", "key2"])).toBe(BulkError("ERR must use 1 parameters"));
+    expect(incr([])).toBe(BulkError(ErrorMessages.WRONG_ARG_COUNT("incr", 1)));
+    expect(incr(["key1", "key2"])).toBe(
+      BulkError(ErrorMessages.WRONG_ARG_COUNT("incr", 1)),
+    );
   });
 
   test("returns error when value is not an integer", () => {
     set(["key", "notanumber"]);
-    expect(incr(["key"])).toBe(
-      BulkError("ERR value is not an integer or out of range"),
-    );
+    expect(incr(["key"])).toBe(BulkError(ErrorMessages.NOT_INTEGER));
   });
 
   test("returns error when value is a float", () => {
     set(["key", "3.14"]);
-    expect(incr(["key"])).toBe(
-      BulkError("ERR value is not an integer or out of range"),
-    );
+    expect(incr(["key"])).toBe(BulkError(ErrorMessages.NOT_INTEGER));
   });
 
   test("returns error when value contains spaces", () => {
     set(["key", "123 456"]);
-    expect(incr(["key"])).toBe(
-      BulkError("ERR value is not an integer or out of range"),
-    );
+    expect(incr(["key"])).toBe(BulkError(ErrorMessages.NOT_INTEGER));
   });
 
   test("returns error when trying to increment a list", () => {
     mem.set("mylist", new Mem(["a", "b"], 1));
-    expect(incr(["mylist"])).toBe(BulkError("WRONGTYPE"));
+    expect(incr(["mylist"])).toBe(BulkError(ErrorMessages.WRONG_TYPE));
   });
 
   test("treats empty string as zero and increments to 1", () => {

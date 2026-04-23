@@ -8,7 +8,7 @@ import {
 } from "./helper";
 import { getActiveMem, Client } from "./class";
 import { mem } from "./state";
-import { Commands } from "./enum";
+import { Commands, DataType } from "./enum";
 import { get } from "./commands/basic/get";
 import { set } from "./commands/basic/set";
 import { blockClient, tryBlpop } from "./blocking";
@@ -26,6 +26,7 @@ import { acl } from "./commands/auth/acl";
 import { llen } from "./commands/lists/llen";
 import { auth } from "./commands/auth/auth";
 import { zadd } from "./commands/sorted_sets/zadd";
+import { ErrorMessages } from "./error";
 
 export async function handle(
   arg: string[],
@@ -40,7 +41,7 @@ export async function handle(
   }
 
   if (!client.authenticated && !(command == Commands.Auth)) {
-    return BulkError("NOAUTH Authentication required.");
+    return BulkError(ErrorMessages.NO_AUTH);
   }
 
   switch (command) {
@@ -70,7 +71,7 @@ export async function handle(
         return BulkArray([], false); //empty bulk array
       }
       if (key3?.WhatData !== 1) {
-        return BulkError("WRONGTYPE");
+        return BulkError(ErrorMessages.WRONG_TYPE);
       }
       const array = key3.data;
 
@@ -108,8 +109,8 @@ export async function handle(
       if (arra == undefined) {
         return NULLBULKSTRING;
       }
-      if (arra?.WhatData !== 1) {
-        return BulkError("WRONGTYPE");
+      if (arra?.WhatData !== DataType.LIST) {
+        return BulkError(ErrorMessages.WRONG_TYPE);
       }
 
       if (arra.data.length == 0) {
@@ -139,12 +140,12 @@ export async function handle(
       const timeoutSeconds = Number(arg[arg.length - 1]);
 
       if (!Number.isFinite(timeoutSeconds) || timeoutSeconds < 0) {
-        return BulkError("ERR timeout is not a float or out of range");
+        return BulkError(ErrorMessages.INVALID_EXPIRE_TIME);
       }
 
       const blpopResult = tryBlpop(mem, keys);
       if (blpopResult.status === "wrongtype") {
-        return BulkError("WRONGTYPE");
+        return BulkError(ErrorMessages.WRONG_TYPE);
       }
 
       if (blpopResult.status === "value") {

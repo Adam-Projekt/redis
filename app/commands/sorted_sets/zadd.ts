@@ -2,24 +2,22 @@ import { getActiveMem, Mem, Score } from "../../class";
 import { BulkError, BulkInteger, BulkString } from "../../helper";
 import { mem } from "../../state";
 import { markKeyModified } from "../../keyspace";
+import { ErrorMessages } from "../../error";
 
 export function zadd(arg: string[]) {
-  // ZADD key [NX|XX] [CH] [INCR] score member [score member ...]
 
   if (arg.length < 3) {
-    return BulkError("ERR wrong number of arguments for 'zadd' command");
+    return BulkError(ErrorMessages.WRONG_ARG_COUNT("zadd", 3));
   }
 
   const key = arg[0];
   let argIndex = 1;
 
-  // Parse options
   let useNX = false; // Only add new members
   let useXX = false; // Only update existing members
   let useCH = false; // Return changed count instead of added count
   let useINCR = false; // Increment score instead of setting
 
-  // Parse all flags
   while (argIndex < arg.length) {
     const option = arg[argIndex].toUpperCase();
 
@@ -43,24 +41,18 @@ export function zadd(arg: string[]) {
 
   // Validate conflicting options
   if (useNX && useXX) {
-    return BulkError(
-      "ERR XX and NX options at the same time are not compatible",
-    );
+    return BulkError(ErrorMessages.NX_XX_CONFLICT);
   }
 
-  // Check we have at least one score-member pair
   const remainingArgs = arg.length - argIndex;
   if (remainingArgs < 2 || remainingArgs % 2 !== 0) {
-    return BulkError("ERR wrong number of arguments for 'zadd' command");
+    return BulkError(ErrorMessages.WRONG_ARG_COUNT("zadd", 3));
   }
 
-  // Get or create sorted set
   let sortedSet = getActiveMem(mem, key);
 
   if (sortedSet !== undefined && sortedSet.WhatData !== 2) {
-    return BulkError(
-      "WRONGTYPE Operation against a key holding the wrong kind of value",
-    );
+    return BulkError(ErrorMessages.WRONG_TYPE);
   }
 
   if (sortedSet === undefined) {
@@ -88,7 +80,7 @@ export function zadd(arg: string[]) {
     } else {
       score = parseFloat(scoreStr);
       if (!Number.isFinite(score)) {
-        return BulkError("ERR value is not a valid float");
+        return BulkError(ErrorMessages.NOT_FLOAT);
       }
     }
 
@@ -112,9 +104,7 @@ export function zadd(arg: string[]) {
     if (useINCR) {
       // INCR mode: only one score-member pair allowed
       if (remainingArgs !== 2) {
-        return BulkError(
-          "ERR INCR option supports a single increment-element pair",
-        );
+        return BulkError(ErrorMessages.INCR_MULTIPLE_PAIRS);
       }
 
       if (memberExists) {
@@ -122,7 +112,7 @@ export function zadd(arg: string[]) {
         const newScore = oldScore + score;
 
         if (!Number.isFinite(newScore)) {
-          return BulkError("ERR increment would produce an infinite result");
+          return BulkError(ErrorMessages.INFINITE_RESULT);
         }
 
         sortedSet.sorted_sets![existingIndex].score = newScore;
@@ -158,7 +148,7 @@ export function zadd(arg: string[]) {
   if (useINCR) {
     // Return the new score as a bulk string
     if (lastScore === null) {
-      return BulkError("ERR INCR option requires a valid member");
+      return BulkError(ErrorMessages.INCR_REQUIRES_VALID_MEMBER);
     }
     return BulkString(lastScore.toString());
   } else if (useCH) {

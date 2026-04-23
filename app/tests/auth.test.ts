@@ -5,6 +5,7 @@ import { Commands } from "../enum";
 import { Client, User } from "../class";
 import { mem, users } from "../state";
 import * as net from "net";
+import { ErrorMessages } from "../error";
 
 // Helper to reset state
 function resetState() {
@@ -94,7 +95,7 @@ describe("AUTH Command - Failures", () => {
       client,
     );
 
-    expect(result).toContain("WRONGPASS");
+    expect(result).toContain(ErrorMessages.INVALID_USERNAME);
     expect(client.authenticated).toBe(false);
   });
 
@@ -113,7 +114,7 @@ describe("AUTH Command - Failures", () => {
       client,
     );
 
-    expect(result).toContain("WRONGPASS");
+    expect(result).toContain(ErrorMessages.INVALID_PASSWORD);
     expect(client.authenticated).toBe(false);
   });
 
@@ -129,7 +130,7 @@ describe("AUTH Command - Failures", () => {
 
     const result = await handle(["alice", "password"], Commands.Auth, client);
 
-    expect(result).toContain("WRONGPASS");
+    expect(result).toContain(ErrorMessages.WRONGPASS);
     expect(client.authenticated).toBe(false);
   });
 
@@ -144,7 +145,7 @@ describe("AUTH Command - Failures", () => {
 
     const result = await handle(["alice", ""], Commands.Auth, client);
 
-    expect(result).toContain("WRONGPASS");
+    expect(result).toContain(ErrorMessages.WRONGPASS);
     expect(client.authenticated).toBe(false);
   });
 });
@@ -161,11 +162,11 @@ describe("AUTH Command - Multiple Passwords", () => {
     const hashedPassword2 = await generateSHA256(password2);
     const hashedPassword3 = await generateSHA256(password3);
 
-    const alice = new User("alice", [], [
-      hashedPassword1,
-      hashedPassword2,
-      hashedPassword3,
-    ]);
+    const alice = new User(
+      "alice",
+      [],
+      [hashedPassword1, hashedPassword2, hashedPassword3],
+    );
     users.push(alice);
 
     const client = createTestClient();
@@ -206,7 +207,7 @@ describe("AUTH Command - Multiple Passwords", () => {
       client,
     );
 
-    expect(result).toContain("WRONGPASS");
+    expect(result).toContain(ErrorMessages.WRONGPASS);
     expect(client.authenticated).toBe(false);
   });
 });
@@ -318,7 +319,7 @@ describe("AUTH Command - Edge Cases", () => {
     // Try with different case
     const result = await handle(["ALICE", "password"], Commands.Auth, client);
 
-    expect(result).toContain("WRONGPASS");
+    expect(result).toContain(ErrorMessages.WRONGPASS);
     expect(client.authenticated).toBe(false);
   });
 
@@ -333,13 +334,9 @@ describe("AUTH Command - Edge Cases", () => {
     client.authenticated = false;
 
     // Try with different case
-    const result = await handle(
-      ["alice", "mypassword"],
-      Commands.Auth,
-      client,
-    );
+    const result = await handle(["alice", "mypassword"], Commands.Auth, client);
 
-    expect(result).toContain("WRONGPASS");
+    expect(result).toContain(ErrorMessages.WRONGPASS);
     expect(client.authenticated).toBe(false);
   });
 
@@ -359,7 +356,7 @@ describe("AUTH Command - Edge Cases", () => {
       Commands.Auth,
       client,
     );
-    expect(result).toContain("WRONGPASS");
+    expect(result).toContain(ErrorMessages.WRONGPASS);
 
     // Should succeed with exact match
     client.authenticated = false;
@@ -386,7 +383,7 @@ describe("AUTH Command - State Management", () => {
 
     // Try wrong password
     let result = await handle(["alice", "wrongpass"], Commands.Auth, client);
-    expect(result).toContain("WRONGPASS");
+    expect(result).toContain(ErrorMessages.WRONGPASS);
     expect(client.authenticated).toBe(false);
 
     // Try correct password

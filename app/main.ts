@@ -39,8 +39,6 @@ export function startServer(port: number = 6379, host: string = "127.0.0.1") {
       return;
     }
 
-    // The local test sandbox can reject binds entirely, so keep the process
-    // alive long enough for startup verification even when listen fails.
     if (!keepAliveTimer) {
       keepAliveTimer = setInterval(() => {}, 60_000);
     }
