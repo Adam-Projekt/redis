@@ -59,7 +59,7 @@ export async function handle(
     case Commands.Watch:
       return watch(arg, client);
     case Commands.Subscribe:
-      return subscribe(arg);
+      return subscribe(arg,client);
     case Commands.Set:
       return set(arg);
     case Commands.Get:
