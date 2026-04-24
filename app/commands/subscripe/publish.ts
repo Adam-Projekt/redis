@@ -1,7 +1,7 @@
 import type { Client } from "../../class";
 import { clients } from "../../clients";
 import { ErrorMessages } from "../../error";
-import { BulkInteger, BulkString } from "../../helper";
+import { BulkArray, BulkInteger, BulkString } from "../../helper";
 
 export function publish(arg: string[], client: Client): string {
   if (arg.length != 2) {
@@ -14,6 +14,7 @@ export function publish(arg: string[], client: Client): string {
     let c = clients[i];
     if (c.subscribeTo.includes(channel)) {
       count++;
+      c.socket.write(BulkArray(["message", channel, message]));
     }
   }
   return BulkInteger(count);
