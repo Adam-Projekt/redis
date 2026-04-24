@@ -1,6 +1,6 @@
 import type { Client } from "../../class";
 import { ErrorMessages } from "../../error";
-import { BulkString } from "../../helper";
+import { BulkArray, BulkInteger, BulkString } from "../../helper";
 
 
 
