@@ -1,5 +1,5 @@
 //my things
-import { SimpleString, BulkError } from "./helper";
+import { SimpleString, BulkError, BulkArray } from "./helper";
 import { Client, query } from "./class";
 import { Commands } from "./enum";
 import { handle } from "./command";
@@ -216,7 +216,7 @@ export async function Manage(arg: string[], client: Client) {
     client.socket.write(SimpleString("PONG")); //command unknown
     return;
   }
-  const allowInSubscribeMode = [Commands.Subscribe];
+  const allowInSubscribeMode = [Commands.Subscribe, Commands.Ping];
   const allowInTransaction = [Commands.Exec, Commands.Discard];
   if (
     client.isTransaction &&
@@ -238,6 +238,9 @@ export async function Manage(arg: string[], client: Client) {
     }
   } else if (client.subscribeMode) {
     if (allowInSubscribeMode.includes(command)) {
+      if (command == Commands.Ping) {
+        client.socket.write(BulkArray(["pong", ""]));
+      }
       client.socket.write(await handle(arg, command, client));
     } else {
       client.socket.write(
