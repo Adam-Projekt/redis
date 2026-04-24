@@ -29,6 +29,7 @@ export async function Manage(arg: string[], client: Client) {
     Commands.Unsubscribe,
     Commands.Ping,
     Commands.Publish,
+    Commands.Discard,
   ];
   const allowInTransaction = [Commands.Exec, Commands.Discard];
   if (
@@ -49,13 +50,13 @@ export async function Manage(arg: string[], client: Client) {
         client.socket.write(SimpleString("QUEUED"));
       }
     }
+    return;
   } else if (client.subscribeMode) {
     if (allowInSubscribeMode.includes(command)) {
       if (command == Commands.Ping) {
         client.socket.write(BulkArray(["pong", ""]));
-      } else {
-        client.socket.write(await handle(arg, command, client));
-      }
+        return;
+      } 
     } else {
       client.socket.write(
         BulkError(
@@ -65,9 +66,9 @@ export async function Manage(arg: string[], client: Client) {
         ),
       );
     }
-  } else {
-    client.socket.write(await handle(arg, command, client));
+    return
   }
+  client.socket.write(await handle(arg, command, client));
 }
 function switchCommand(arg: string[], client: Client): Commands {
   let command = Commands.Not;
