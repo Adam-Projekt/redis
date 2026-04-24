@@ -216,8 +216,13 @@ export async function Manage(arg: string[], client: Client) {
     client.socket.write(SimpleString("PONG")); //command unknown
     return;
   }
+  const allowInSubscribeMode = [Commands.Subscribe];
   const allowInTransaction = [Commands.Exec, Commands.Discard];
-  if (client.isTransaction && !allowInTransaction.includes(command)) {
+  if (
+    client.isTransaction &&
+    !allowInTransaction.includes(command) &&
+    !client.subscribeMode
+  ) {
     if (command == Commands.Watch) {
       client.socket.write(BulkError(ErrorMessages.WATCH_IN_MULTI));
     } else {
@@ -230,6 +235,16 @@ export async function Manage(arg: string[], client: Client) {
       } else {
         client.socket.write(SimpleString("QUEUED"));
       }
+    }
+  } else if (client.subscribeMode) {
+    if (allowInSubscribeMode.includes(command)) {
+      client.socket.write(await handle(arg, command, client));
+    } else {
+      client.socket.write(
+        BulkError(
+          "ERR Can't execute 'set': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context ",
+        ),
+      );
     }
   } else {
     client.socket.write(await handle(arg, command, client));

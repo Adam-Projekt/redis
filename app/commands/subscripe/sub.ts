@@ -10,6 +10,8 @@ export function subscribe(arg: string[], client: Client) {
   if (!client.subscribeTo.includes(key)) {
     client.subscribeTo.push(key);
   }
+  client.subscribeMode = true;
+
   return BulkArray(
     [
       BulkString("subscribe"),

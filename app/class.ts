@@ -97,6 +97,7 @@ export class Client {
   TransactionArray: query[];
   watchedKeyVersions: Map<string, number>;
   subscribeTo: string[] = [];
+  subscribeMode: boolean = false;
 
   constructor(socket: net.Socket, defaultUser: User) {
     this.socket = socket;
