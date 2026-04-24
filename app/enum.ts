@@ -2,6 +2,7 @@ export enum Commands {
   Set = "SET",
   Get = "GET",
   Config = "CONFIG",
+  Subscribe = "SUBSCRIBE",
   Zadd = "ZADD",
   Incr = "INCR",
   Multi = "MULTI",

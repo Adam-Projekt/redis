@@ -27,6 +27,7 @@ import { llen } from "./commands/lists/llen";
 import { auth } from "./commands/auth/auth";
 import { zadd } from "./commands/sorted_sets/zadd";
 import { ErrorMessages } from "./error";
+import { subscribe } from "./commands/subscripe/sub";
 
 export async function handle(
   arg: string[],
@@ -57,6 +58,8 @@ export async function handle(
       return incr(arg);
     case Commands.Watch:
       return watch(arg, client);
+    case Commands.Subscribe:
+      return subscribe(arg);
     case Commands.Set:
       return set(arg);
     case Commands.Get:

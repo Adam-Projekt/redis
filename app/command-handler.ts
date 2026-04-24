@@ -43,6 +43,16 @@ export async function Manage(arg: string[], client: Client) {
         return;
       }
       break;
+    case "SUBSCRIBE":
+      if (arg.length > 1) {
+        command = Commands.Subscribe;
+      } else {
+        client.socket.write(
+          BulkError(ErrorMessages.WRONG_ARG_COUNT("Subscribe", 1)),
+        );
+        return;
+      }
+      break;
     case "WATCH":
       if (arg.length > 1) {
         command = Commands.Watch;
