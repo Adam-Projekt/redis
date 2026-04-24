@@ -29,7 +29,7 @@ import { zadd } from "./commands/sorted_sets/zadd";
 import { ErrorMessages } from "./error";
 import * as sub from "./commands/subscribe/sub";
 import { publish } from "./commands/subscribe/publish";
-import unsubscribe from "./commands/subscribe/unsubscribe";
+import { unsubscribe } from "./commands/subscribe/unsubscribe";
 
 export async function handle(
   arg: string[],
@@ -49,7 +49,7 @@ export async function handle(
 
   switch (command) {
     case Commands.Unsubscribe:
-      return unsubscribe(arg,client)
+      return unsubscribe(arg, client);
     case Commands.Publish:
       return publish(arg, client);
     case Commands.Not:
