@@ -26,6 +26,7 @@ export async function Manage(arg: string[], client: Client) {
   console.log(command);
   const allowInSubscribeMode = [
     Commands.Subscribe,
+    Commands.Unsubscribe,
     Commands.Ping,
     Commands.Publish,
   ];

@@ -27,7 +27,7 @@ import { llen } from "./commands/lists/llen";
 import { auth } from "./commands/auth/auth";
 import { zadd } from "./commands/sorted_sets/zadd";
 import { ErrorMessages } from "./error";
-import * as sub from "./commands/subscribe/sub";
+import { subscribe } from "./commands/subscribe/sub";
 import { publish } from "./commands/subscribe/publish";
 import { unsubscribe } from "./commands/subscribe/unsubscribe";
 
@@ -67,7 +67,7 @@ export async function handle(
     case Commands.Watch:
       return watch(arg, client);
     case Commands.Subscribe:
-      return sub.subscribe(arg, client);
+      return subscribe(arg, client);
     case Commands.Set:
       return set(arg);
     case Commands.Get:
