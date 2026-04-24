@@ -28,7 +28,7 @@ export const ErrorMessages = {
   WATCH_IN_MULTI: "ERR WATCH inside MULTI is not allowed",
 
   // Auth
-  NO_AUTH: "WRONGPASS NOAUTH Authentication required.",
+  NO_AUTH: "NOAUTH Authentication required.",
   INVALID_PASSWORD: "WRONGPASS invalid password",
   WRONGPASS: "WRONGPASS invalid username-password pair",
   USER_DISABLED: "ERR user is disabled",
