@@ -212,10 +212,6 @@ export async function Manage(arg: string[], client: Client) {
 
   arg = arg.slice(1); //removes first element and shift
   console.log(command);
-  if (command == Commands.Not) {
-    client.socket.write(SimpleString("PONG")); //command unknown
-    return;
-  }
   const allowInSubscribeMode = [Commands.Subscribe, Commands.Ping];
   const allowInTransaction = [Commands.Exec, Commands.Discard];
   if (

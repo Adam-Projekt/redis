@@ -46,6 +46,8 @@ export async function handle(
   }
 
   switch (command) {
+    case Commands.Not:
+      return SimpleString("PONG"); //command unknown
     case Commands.Zadd:
       return zadd(arg);
     case Commands.Unwatch:
@@ -59,7 +61,7 @@ export async function handle(
     case Commands.Watch:
       return watch(arg, client);
     case Commands.Subscribe:
-      return subscribe(arg,client);
+      return subscribe(arg, client);
     case Commands.Set:
       return set(arg);
     case Commands.Get:
