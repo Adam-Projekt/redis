@@ -4,10 +4,12 @@ import { Client } from "./class";
 import { Manage } from "./command-handler";
 import { parseRESP } from "./parser";
 import { users } from "./state";
+import { clients } from "./clients";
 
 export function createServer() {
   return net.createServer((connection) => {
     const client = new Client(connection, users[0]);
+    clients.push(client);
 
     connection.on("data", (data: Buffer) => {
       const userData = parseRESP(data);

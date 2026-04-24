@@ -250,7 +250,7 @@ export async function Manage(arg: string[], client: Client) {
             command +
             "': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context ",
         ),
-      );
+        );
     }
   } else {
     client.socket.write(await handle(arg, command, client));
