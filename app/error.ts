@@ -28,12 +28,12 @@ export const ErrorMessages = {
   WATCH_IN_MULTI: "ERR WATCH inside MULTI is not allowed",
 
   // Auth
-  NO_AUTH: "NOAUTH Authentication required.",
-  INVALID_PASSWORD: "ERR invalid password",
+  NO_AUTH: "WRONGPASS NOAUTH Authentication required.",
+  INVALID_PASSWORD: "WRONGPASS invalid password",
   WRONGPASS: "WRONGPASS invalid username-password pair",
   USER_DISABLED: "ERR user is disabled",
   BLOCKED_CLIENT: "ERR client is blocked",
-  INVALID_USERNAME: "ERR invalid username",
+  INVALID_USERNAME: "WRONGPASS invalid username",
 
   // Infinity
   INFINITE_RESULT: "ERR increment would produce an infinite result",
