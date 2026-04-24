@@ -20,10 +20,63 @@ export async function Manage(arg: string[], client: Client) {
     return;
   }
 
-  const input: string = arg[0].toLocaleUpperCase();
-  let command: Commands = Commands.Not;
+  let command: Commands = switchCommand(arg, client);
 
-  switch (input) {
+  arg = arg.slice(1); //removes first element and shift
+  console.log(command);
+  const allowInSubscribeMode = [Commands.Subscribe, Commands.Ping];
+  const allowInTransaction = [Commands.Exec, Commands.Discard];
+  if (
+    client.isTransaction &&
+    !allowInTransaction.includes(command) &&
+    !client.subscribeMode
+  ) {
+    if (command == Commands.Watch) {
+      client.socket.write(BulkError(ErrorMessages.WATCH_IN_MULTI));
+    } else {
+      client.TransactionArray.push(new query(command, arg));
+      if (client.TransactionArray.length >= 5) {
+        client.TransactionArray = [];
+        client.isTransaction = false;
+        client.clearWatch();
+        client.socket.write(BulkError(ErrorMessages.TOO_BIG_TRANSATION));
+      } else {
+        client.socket.write(SimpleString("QUEUED"));
+      }
+    }
+  } else if (client.subscribeMode) {
+    if (allowInSubscribeMode.includes(command)) {
+      if (command == Commands.Ping) {
+        client.socket.write(BulkArray(["pong", ""]));
+      } else {
+        client.socket.write(await handle(arg, command, client));
+      }
+    } else {
+      client.socket.write(
+        BulkError(
+          "ERR Can't execute '" +
+            command +
+            "': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context ",
+        ),
+      );
+    }
+  } else {
+    client.socket.write(await handle(arg, command, client));
+  }
+}
+function switchCommand(arg: string[], client: Client): Commands {
+  let command = Commands.Not;
+  switch (arg[0].toUpperCase()) {
+    case "PUBLISH":
+      if (arg.length > 2) {
+        command = Commands.Publish;
+      } else {
+        client.socket.write(
+          BulkError(ErrorMessages.WRONG_ARG_COUNT("Publish", 2)),
+        );
+        return;
+      }
+      break;
     case "DISCARD":
       command = Commands.Discard;
       break;
@@ -209,46 +262,5 @@ export async function Manage(arg: string[], client: Client) {
     default:
       break;
   }
-
-  arg = arg.slice(1); //removes first element and shift
-  console.log(command);
-  const allowInSubscribeMode = [Commands.Subscribe, Commands.Ping];
-  const allowInTransaction = [Commands.Exec, Commands.Discard];
-  if (
-    client.isTransaction &&
-    !allowInTransaction.includes(command) &&
-    !client.subscribeMode
-  ) {
-    if (command == Commands.Watch) {
-      client.socket.write(BulkError(ErrorMessages.WATCH_IN_MULTI));
-    } else {
-      client.TransactionArray.push(new query(command, arg));
-      if (client.TransactionArray.length >= 5) {
-        client.TransactionArray = [];
-        client.isTransaction = false;
-        client.clearWatch();
-        client.socket.write(BulkError(ErrorMessages.TOO_BIG_TRANSATION));
-      } else {
-        client.socket.write(SimpleString("QUEUED"));
-      }
-    }
-  } else if (client.subscribeMode) {
-    if (allowInSubscribeMode.includes(command)) {
-      if (command == Commands.Ping) {
-        client.socket.write(BulkArray(["pong", ""]));
-      } else {
-        client.socket.write(await handle(arg, command, client));
-      }
-    } else {
-      client.socket.write(
-        BulkError(
-          "ERR Can't execute '" +
-            command +
-            "': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context ",
-        ),
-        );
-    }
-  } else {
-    client.socket.write(await handle(arg, command, client));
-  }
+  return command;
 }

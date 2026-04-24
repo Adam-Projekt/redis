@@ -28,6 +28,7 @@ import { auth } from "./commands/auth/auth";
 import { zadd } from "./commands/sorted_sets/zadd";
 import { ErrorMessages } from "./error";
 import { subscribe } from "./commands/subscripe/sub";
+import { publish } from "./commands/subscripe/publish";
 
 export async function handle(
   arg: string[],
@@ -46,6 +47,8 @@ export async function handle(
   }
 
   switch (command) {
+    case Commands.Publish:
+      return publish(arg, client);
     case Commands.Not:
       return SimpleString("PONG"); //command unknown
     case Commands.Zadd:
