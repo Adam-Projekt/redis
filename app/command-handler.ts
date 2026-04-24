@@ -242,7 +242,9 @@ export async function Manage(arg: string[], client: Client) {
     } else {
       client.socket.write(
         BulkError(
-          "ERR Can't execute 'set': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context ",
+          "ERR Can't execute '" +
+            command +
+            "': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context ",
         ),
       );
     }
