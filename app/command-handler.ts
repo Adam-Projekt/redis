@@ -24,7 +24,11 @@ export async function Manage(arg: string[], client: Client) {
 
   arg = arg.slice(1); //removes first element and shift
   console.log(command);
-  const allowInSubscribeMode = [Commands.Subscribe, Commands.Ping];
+  const allowInSubscribeMode = [
+    Commands.Subscribe,
+    Commands.Ping,
+    Commands.Publish,
+  ];
   const allowInTransaction = [Commands.Exec, Commands.Discard];
   if (
     client.isTransaction &&
@@ -67,6 +71,15 @@ export async function Manage(arg: string[], client: Client) {
 function switchCommand(arg: string[], client: Client): Commands {
   let command = Commands.Not;
   switch (arg[0].toUpperCase()) {
+    case "UNSUBSCRIBE":
+      if (arg.length > 1) {
+        command = Commands.Unsubscribe;
+      } else {
+        client.socket.write(
+          BulkError(ErrorMessages.WRONG_ARG_COUNT("Unsubscribe", 1)),
+        );
+      }
+      break;
     case "PUBLISH":
       if (arg.length > 2) {
         command = Commands.Publish;
@@ -74,7 +87,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("Publish", 2)),
         );
-        return;
       }
       break;
     case "DISCARD":
@@ -93,7 +105,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("incr", 1)),
         );
-        return;
       }
       break;
     case "SUBSCRIBE":
@@ -103,7 +114,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("Subscribe", 1)),
         );
-        return;
       }
       break;
     case "WATCH":
@@ -113,7 +123,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("watch", 1)),
         );
-        return;
       }
       break;
     case "TYPE":
@@ -123,7 +132,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("type", 1)),
         );
-        return;
       }
       break;
     case "LLEN":
@@ -133,7 +141,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("llen", 1)),
         );
-        return;
       }
       break;
     case "LPOP":
@@ -143,7 +150,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("lpop", 1)),
         );
-        return;
       }
       break;
     case "BLPOP":
@@ -153,7 +159,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("blpop", 2)),
         );
-        return;
       }
       break;
     case "LRANGE":
@@ -163,7 +168,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("lrange", 3)),
         );
-        return;
       }
       break;
     case "LPUSH":
@@ -173,7 +177,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("lpush", 2)),
         );
-        return;
       }
       break;
     case "SET":
@@ -181,7 +184,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         command = Commands.Set;
       } else {
         client.socket.write(BulkError(ErrorMessages.WRONG_ARG_COUNT("set", 2)));
-        return;
       }
 
       break;
@@ -190,7 +192,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         command = Commands.Get;
       } else {
         client.socket.write(BulkError(ErrorMessages.WRONG_ARG_COUNT("get", 1)));
-        return;
       }
 
       break;
@@ -201,7 +202,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("rpush", 2)),
         );
-        return;
       }
       break;
     case "ACL":
@@ -209,7 +209,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         command = Commands.Acl;
       } else {
         client.socket.write(BulkError(ErrorMessages.WRONG_ARG_COUNT("acl", 1)));
-        return;
       }
 
       break;
@@ -220,7 +219,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("auth", 2)),
         );
-        return;
       }
       break;
     case "UNWATCH":
@@ -233,7 +231,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("echo", 1)),
         );
-        return;
       }
       break;
     case "CONFIG":
@@ -243,7 +240,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("config", 2)),
         );
-        return;
       }
       break;
     case "ZADD":
@@ -253,7 +249,6 @@ function switchCommand(arg: string[], client: Client): Commands {
         client.socket.write(
           BulkError(ErrorMessages.WRONG_ARG_COUNT("zadd", 3)),
         );
-        return;
       }
       break;
     case "PING":

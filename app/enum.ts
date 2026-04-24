@@ -4,6 +4,7 @@ export enum Commands {
   Config = "CONFIG",
   Publish = "PUBLISH",
   Subscribe = "SUBSCRIBE",
+  Unsubscribe = "UNSUBSCRIBE"
   Zadd = "ZADD",
   Incr = "INCR",
   Multi = "MULTI",
