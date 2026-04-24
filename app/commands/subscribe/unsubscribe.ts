@@ -7,7 +7,7 @@ export function unsubscribe(arg: string[], client: Client) {
     return BulkString(ErrorMessages.WRONG_ARG_COUNT("unsubscribe", 1));
   }
   const key = arg[0];
-  if (!client.subscribeTo.includes(key)) {
+  if (client.subscribeTo.includes(key)) {
     const index = client.subscribeTo.indexOf(key);
     client.subscribeTo.splice(index, 1);
   }
