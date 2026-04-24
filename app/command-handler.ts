@@ -240,8 +240,9 @@ export async function Manage(arg: string[], client: Client) {
     if (allowInSubscribeMode.includes(command)) {
       if (command == Commands.Ping) {
         client.socket.write(BulkArray(["pong", ""]));
+      } else {
+        client.socket.write(await handle(arg, command, client));
       }
-      client.socket.write(await handle(arg, command, client));
     } else {
       client.socket.write(
         BulkError(
